@@ -1,5 +1,9 @@
+import Navbar from "@/components/Navbar";
+import LandingPage from "@/screens/LandingPage";
+import Image from "next/image";
+
 const Home = () => {
-  return <div>Let's build a chess application</div>;
+  return <LandingPage />;
 };
 
 export default Home;
