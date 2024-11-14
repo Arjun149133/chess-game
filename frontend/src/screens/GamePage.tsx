@@ -1,6 +1,4 @@
 "use client";
-import Board from "@/components/Board";
-import Button from "@/components/Button";
 import Game from "@/components/Game";
 import { useSocket } from "@/hooks/useSocket";
 import { Chess } from "chess.js";

@@ -1,10 +1,11 @@
 import { WebSocket } from "ws";
 import { INIT_GAME, MOVE } from "./message";
 import { Game } from "./Game";
+import { User } from "./User";
 
 export class GameManager {
   private games: Game[];
-  private users: WebSocket[];
+  private users: User[];
   private pendingUser: WebSocket | null;
 
   constructor() {
@@ -13,13 +14,14 @@ export class GameManager {
     this.pendingUser = null;
   }
 
-  addUser(socket: WebSocket) {
-    this.users.push(socket);
-    this.addHandler(socket);
+  addUser(user: User) {
+    console.log(process.env.JWT_SECRET);
+    this.users.push(user);
+    this.addHandler(user.socket);
   }
 
-  removeUser(socket: WebSocket) {
-    this.users = this.users.filter((user) => user !== socket);
+  removeUser(user: User) {
+    this.users = this.users.filter((u) => u.socket !== user.socket);
   }
 
   private addHandler(socket: WebSocket) {
