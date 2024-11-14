@@ -1,13 +1,13 @@
 import React from "react";
 
 interface props {
-  text: string;
+  children: React.ReactNode;
   variant?: "dark" | "white";
   onclick?: () => void;
   styles?: string;
 }
 
-const Button: React.FC<props> = ({ text, variant, onclick, styles }) => {
+const Button: React.FC<props> = ({ variant, onclick, styles, children }) => {
   return (
     <div
       className={`${
@@ -17,7 +17,7 @@ const Button: React.FC<props> = ({ text, variant, onclick, styles }) => {
       } flex justify-center items-center p-2 hover:cursor-pointer rounded-md ${styles}`}
       onClick={onclick}
     >
-      {text}
+      {children}
     </div>
   );
 };

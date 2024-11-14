@@ -34,36 +34,19 @@ export class Game {
 
   makeMove(socket: WebSocket, move: { from: string; to: string }) {
     if (this.moveCount % 2 === 0 && socket !== this.player1) {
+      console.log("Invalid move1");
       return;
     }
     if (this.moveCount % 2 === 1 && socket !== this.player2) {
+      console.log("Invalid move2");
       return;
     }
 
     try {
-      this.board.move(move, { strict: true });
+      console.log(" move " + move);
+      this.board.move(move);
     } catch (error) {
       console.log(error);
-      return;
-    }
-
-    if (this.board.isGameOver()) {
-      this.player1.emit(
-        JSON.stringify({
-          type: GAME_OVER,
-          payload: {
-            winner: this.board.turn() === "w" ? "black" : "white",
-          },
-        })
-      );
-      this.player2.emit(
-        JSON.stringify({
-          type: GAME_OVER,
-          payload: {
-            winner: this.board.turn() === "w" ? "black" : "white",
-          },
-        })
-      );
       return;
     }
 
@@ -71,18 +54,45 @@ export class Game {
       this.player2.send(
         JSON.stringify({
           type: MOVE,
-          payload: move,
+          payload: {
+            move,
+          },
         })
       );
     } else {
       this.player1.send(
         JSON.stringify({
           type: MOVE,
-          payload: move,
+          payload: {
+            move,
+          },
         })
       );
     }
 
+    if (this.board.isGameOver()) {
+      this.player1.send(
+        JSON.stringify({
+          type: GAME_OVER,
+          payload: {
+            move: move,
+            winner: this.board.turn() === "w" ? "black" : "white",
+          },
+        })
+      );
+      this.player2.send(
+        JSON.stringify({
+          type: GAME_OVER,
+          payload: {
+            move: move,
+            winner: this.board.turn() === "w" ? "black" : "white",
+          },
+        })
+      );
+      return;
+    }
+
+    console.log("Move made");
     this.moveCount++;
   }
 }

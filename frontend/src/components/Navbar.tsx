@@ -7,8 +7,10 @@ const Navbar = () => {
         Chess
       </div>
       <div className=" space-x-4 flex">
-        <Button text="Sign In" styles=" w-28" variant="dark" />
-        <Button text="Log In" styles=" w-28" />
+        <Button styles=" w-28" variant="dark">
+          Sign In
+        </Button>
+        <Button styles=" w-28">Log In</Button>
       </div>
     </div>
   );

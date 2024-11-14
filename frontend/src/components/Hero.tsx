@@ -23,11 +23,9 @@ const Hero = () => {
         </div>
         <div className="flex justify-center">
           <Link href={"/play/online"}>
-            <Button
-              text="Play Online"
-              variant="dark"
-              styles="bg-green-600 h-12 w-48 font-bold"
-            />
+            <Button variant="dark" styles="bg-green-600 h-12 w-48 font-bold">
+              Play Online
+            </Button>
           </Link>
         </div>
       </div>
