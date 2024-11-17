@@ -1,7 +1,7 @@
-import LoginPage from "@/screens/LoginPage";
+import LoginForm from "@/components/LoginForm";
 
 const page = () => {
-  return <LoginPage />;
+  return <LoginForm />;
 };
 
 export default page;

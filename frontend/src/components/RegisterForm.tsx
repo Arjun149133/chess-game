@@ -5,6 +5,10 @@ import Input from "./Input";
 import GoogleButton from "./GoogleButton";
 import Image from "next/image";
 import Link from "next/link";
+import axios from "axios";
+
+const URL_PASSWORD = `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/register`;
+const URL_GOOGLE = `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/google`;
 
 const RegisterForm = () => {
   const [user, setUser] = useState({
@@ -19,6 +23,20 @@ const RegisterForm = () => {
       ...prev,
       [name]: value,
     }));
+  };
+
+  const handleSubmit = async () => {
+    try {
+      const res = await axios.post(URL_PASSWORD, user);
+      console.log(res);
+      console.log(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleGoogleSubmit = () => {
+    window.open(URL_GOOGLE, "_self");
   };
 
   return (
@@ -60,7 +78,7 @@ const RegisterForm = () => {
           value={user.password}
           onChange={handleInputChange}
         />
-        <Button styles=" w-72 my-2" variant="dark">
+        <Button styles=" w-72 my-2" variant="dark" onclick={handleSubmit}>
           Register
         </Button>
       </div>
@@ -70,7 +88,7 @@ const RegisterForm = () => {
         <div className="flex-grow border-b border-gray-300 h-1 w-36"></div>
       </div>
       <div>
-        <GoogleButton />
+        <GoogleButton onclick={handleGoogleSubmit} />
       </div>
     </div>
   );
