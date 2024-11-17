@@ -4,6 +4,7 @@ import { loginFailed, loginHandler, logout } from "../handlers/loginHandler";
 import { guestHandler } from "../handlers/guestHandler";
 import passport from "passport";
 import "dotenv/config";
+import { refreshHandler } from "../handlers/refreshHandler";
 
 const router = Router();
 
@@ -25,5 +26,7 @@ router.get(
     failureRedirect: "/auth/login/failed",
   })
 );
+//whenever play button is hit:
+router.get("/refresh", refreshHandler);
 
 export default router;

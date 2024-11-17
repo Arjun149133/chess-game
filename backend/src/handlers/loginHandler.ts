@@ -2,7 +2,8 @@ import { Request, response, Response } from "express";
 import bcrypt from "bcryptjs";
 import { db } from "../db";
 import jwt from "jsonwebtoken";
-import { COOKIE_MAX_AGE, JWT_EXPIRES_IN } from "../constants";
+import { COOKIE_MAX_AGE, JWT_EXPIRES_IN } from "../lib/constants";
+import "dotenv/config";
 
 export const loginHandler = async (req: Request, res: Response) => {
   const { username, password } = req.body;

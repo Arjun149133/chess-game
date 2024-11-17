@@ -29,10 +29,12 @@ export const initPassport = () => {
             create: {
               username: profile.displayName,
               email: profile.emails[0].value!,
+              picture: profile.photos[0].value,
               provider: "Google",
             },
             update: {
               email: profile.emails[0].value,
+              picture: profile.photos[0].value,
             },
             //@ts-ignore
             where: {

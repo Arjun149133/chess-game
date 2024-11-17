@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { v4 as uuidv4 } from "uuid";
 import { db } from "../db";
 import jwt from "jsonwebtoken";
-import { COOKIE_MAX_AGE, JWT_EXPIRES_IN } from "../constants";
+import { COOKIE_MAX_AGE, JWT_EXPIRES_IN } from "../lib/constants";
 
 export const guestHandler = async (req: Request, res: Response) => {
   const guestId = "guest-" + uuidv4();
