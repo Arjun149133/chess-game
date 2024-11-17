@@ -6,8 +6,8 @@ import { COOKIE_MAX_AGE, JWT_EXPIRES_IN } from "../lib/constants";
 import "dotenv/config";
 
 export const loginHandler = async (req: Request, res: Response) => {
-  const { username, password } = req.body;
-  if (!username || !password) {
+  const { email, password } = req.body;
+  if (!email || !password) {
     res.status(400).json({
       msg: "Please provide both username and password",
     });
@@ -16,7 +16,7 @@ export const loginHandler = async (req: Request, res: Response) => {
   try {
     const user = await db.user.findFirst({
       where: {
-        username: username,
+        email: email,
       },
     });
     if (!user) {

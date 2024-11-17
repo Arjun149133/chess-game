@@ -1,3 +1,4 @@
+import Link from "next/link";
 import Button from "./Button";
 
 const Navbar = () => {
@@ -7,10 +8,14 @@ const Navbar = () => {
         Chess
       </div>
       <div className=" space-x-4 flex">
-        <Button styles=" w-28" variant="dark">
-          Sign In
-        </Button>
-        <Button styles=" w-28">Log In</Button>
+        <Link href={"/register"}>
+          <Button styles=" w-28" variant="dark">
+            Sign In
+          </Button>
+        </Link>
+        <Link href={"/login"}>
+          <Button styles=" w-28">Log In</Button>
+        </Link>
       </div>
     </div>
   );
