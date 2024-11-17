@@ -13,6 +13,7 @@ export const guestHandler = async (req: Request, res: Response) => {
         username: guestId,
         email: guestId + "@guest.com",
         password: "guest",
+        provider: "Guest",
       },
     });
 

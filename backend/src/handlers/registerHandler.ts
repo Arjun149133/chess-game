@@ -27,6 +27,7 @@ export const registerHandler = async (req: Request, res: Response) => {
         username,
         email,
         password: hashedPassword,
+        provider: "Password",
       },
     });
 

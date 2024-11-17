@@ -24,8 +24,8 @@ export const loginHandler = async (req: Request, res: Response) => {
       });
       return;
     }
-    const hashedPassword = user.password;
-    const isMatch = await bcrypt.compare(password, hashedPassword);
+    const hashedPassword = user.password!;
+    const isMatch = bcrypt.compare(password, hashedPassword);
 
     if (!isMatch) {
       res.status(400).json({

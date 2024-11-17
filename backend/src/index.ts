@@ -3,6 +3,10 @@ import authRouter from "./routes/auth";
 import userRouter from "./routes/users";
 import cookieParser from "cookie-parser";
 import session from "express-session";
+import "dotenv/config";
+import { initPassport } from "./lib/passport";
+import passport from "passport";
+import cors from "cors";
 
 const app = express();
 
@@ -15,6 +19,11 @@ app.use(
     saveUninitialized: true,
   })
 );
+initPassport();
+app.use(passport.initialize());
+app.use(passport.authenticate("session"));
+
+app.use(cors());
 
 app.use("/auth", authRouter);
 app.use("/users", userRouter);

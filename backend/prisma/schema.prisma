@@ -10,8 +10,15 @@ datasource db {
 }
 
 model User {
-    id       String @id @default(uuid())
-    username String @unique
+    id       String   @id @default(uuid())
+    username String   @unique
     email    String
-    password String
+    provider Provider
+    password String?
+}
+
+enum Provider {
+    Google
+    Password
+    Guest
 }

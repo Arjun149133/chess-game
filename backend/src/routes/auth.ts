@@ -2,8 +2,8 @@ import { Router } from "express";
 import { registerHandler } from "../handlers/registerHandler";
 import { loginFailed, loginHandler, logout } from "../handlers/loginHandler";
 import { guestHandler } from "../handlers/guestHandler";
-import { Strategy } from "passport-google-oauth2";
 import passport from "passport";
+import "dotenv/config";
 
 const router = Router();
 
