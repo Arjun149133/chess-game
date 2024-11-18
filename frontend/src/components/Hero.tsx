@@ -20,8 +20,6 @@ const Hero = () => {
         </Link>
       </div>
       <div className=" flex flex-col space-y-7">
-        <div className=" text-white">{JSON.stringify(user)}</div>
-        {/* <div className=" text-white">{JSON.stringify(token)}</div> */}
         <div className=" text-3xl font-bold">
           Play Chess Online <br />{" "}
           <span className=" flex justify-center">on the #3 Site!</span>

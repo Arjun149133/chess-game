@@ -6,20 +6,25 @@ import GoogleButton from "./GoogleButton";
 import Image from "next/image";
 import Link from "next/link";
 import axios from "axios";
+import { useRouter } from "next/navigation";
+import { useUserStrore } from "@/store/userStore";
 
-export const URL_PASSWORD = `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/register`;
+export const URL_PASSWORD_REGISTER = `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/register`;
+export const URL_PASSWORD_LOGIN = `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/login`;
 export const URL_GOOGLE = `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/google`;
 
 const RegisterForm = () => {
-  const [user, setUser] = useState({
+  const [formData, setFormData] = useState({
     username: "",
     email: "",
     password: "",
   });
+  const router = useRouter();
+  const { setToken, setUser } = useUserStrore();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setUser((prev) => ({
+    setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
@@ -27,9 +32,16 @@ const RegisterForm = () => {
 
   const handleSubmit = async () => {
     try {
-      const res = await axios.post(URL_PASSWORD, user);
-      console.log(res);
-      console.log(res.data);
+      const res = await axios.post(URL_PASSWORD_REGISTER, formData);
+      const response = await axios.post(URL_PASSWORD_LOGIN, {
+        email: formData.email,
+        password: formData.password,
+      });
+
+      setToken(response.data.token);
+      setUser(response.data.user);
+
+      router.push("/play/online");
     } catch (error) {
       console.log(error);
     }
@@ -61,21 +73,21 @@ const RegisterForm = () => {
           type="text"
           placeholder="username"
           name="username"
-          value={user.username}
+          value={formData.username}
           onChange={handleInputChange}
         />
         <Input
           type="email"
           placeholder="email"
           name="email"
-          value={user.email}
+          value={formData.email}
           onChange={handleInputChange}
         />
         <Input
           type="password"
           placeholder="password"
           name="password"
-          value={user.password}
+          value={formData.password}
           onChange={handleInputChange}
         />
         <Button styles=" w-72 my-2" variant="dark" onclick={handleSubmit}>

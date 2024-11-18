@@ -7,6 +7,7 @@ export interface jwtClaims {
 export interface UserDetails {
   id: string;
   username: string;
+  email?: string;
   token?: string;
   isGuest?: boolean;
   picture?: string;

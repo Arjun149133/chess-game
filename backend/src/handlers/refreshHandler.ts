@@ -13,10 +13,13 @@ export const refreshHandler = async (req: Request, res: Response) => {
       process.env.JWT_SECRET!
     );
 
+    res.cookie("token", token, { maxAge: COOKIE_MAX_AGE });
     res.status(200).json({
       token: token,
       id: user.id,
-      name: user.username,
+      username: user.username,
+      email: user.email,
+      picture: user.picture,
     });
   } else if (req.cookies && req.cookies.token) {
     const decoded = jwt.verify(

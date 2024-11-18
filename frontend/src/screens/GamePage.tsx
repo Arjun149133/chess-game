@@ -1,7 +1,9 @@
 "use client";
 import Game from "@/components/Game";
+import { useAuth } from "@/hooks/useAuth";
 import { useSocket } from "@/hooks/useSocket";
 import { Chess } from "chess.js";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 export const INIT_GAME = "init_game";
@@ -12,6 +14,7 @@ const GamePage = () => {
   const socket = useSocket();
   const [chess, setChess] = useState(new Chess());
   const [board, setBoard] = useState(chess.board());
+  useAuth();
 
   useEffect(() => {
     if (!socket) return;
@@ -41,10 +44,20 @@ const GamePage = () => {
     };
   }, [socket, chess, board]);
 
-  if (!socket) return <div>Loading...</div>;
+  if (!socket)
+    return (
+      <div>
+        <div>
+          <Link href={"/"}>back</Link>
+        </div>
+        Loading...
+      </div>
+    );
 
   return (
-    <Game socket={socket} board={board} setBoard={setBoard} chess={chess} />
+    <div>
+      <Game socket={socket} board={board} setBoard={setBoard} chess={chess} />
+    </div>
   );
 };
 

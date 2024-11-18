@@ -10,24 +10,32 @@ export const authMiddleware = (
 ) => {
   const token = req.cookies.token;
 
-  if (!token) {
+  if (!token && !req.user) {
     res.status(401).json({
       message: "no token provided",
     });
     return;
   }
 
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as jwtClaims;
+  if (req.cookies && req.cookies.token) {
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET!) as jwtClaims;
 
-    req.user = decoded;
+      req.user = decoded;
 
+      next();
+    } catch (error) {
+      console.log(error);
+      res.status(401).json({
+        message: "Invalid Token access denied",
+      });
+      return;
+    }
+  } else if (req.user) {
     next();
-  } catch (error) {
-    console.log(error);
+  } else {
     res.status(401).json({
-      message: "Invalid Token access denied",
+      message: "user not authenticated",
     });
-    return;
   }
 };

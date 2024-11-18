@@ -56,6 +56,7 @@ export const initPassport = () => {
       return cb(null, {
         id: user.id,
         username: user.username,
+        email: user.email,
         picture: user.picture,
       });
     });
