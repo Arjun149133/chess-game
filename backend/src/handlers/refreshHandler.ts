@@ -2,20 +2,7 @@ import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import "dotenv/config";
 import { COOKIE_MAX_AGE } from "../lib/constants";
-
-interface jwtClaims {
-  username: string;
-  userId: string;
-  isGuest: boolean;
-}
-
-interface UserDetails {
-  id: string;
-  username: string;
-  token?: string;
-  isGuest?: boolean;
-  picture?: string;
-}
+import { jwtClaims, UserDetails } from "../lib/types";
 
 export const refreshHandler = async (req: Request, res: Response) => {
   if (req.user) {

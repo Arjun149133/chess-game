@@ -45,6 +45,7 @@ export const loginHandler = async (req: Request, res: Response) => {
 
     res.cookie("token", token, {
       maxAge: COOKIE_MAX_AGE,
+      httpOnly: true,
     });
 
     res.json({

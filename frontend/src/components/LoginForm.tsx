@@ -5,19 +5,44 @@ import Input from "./Input";
 import GoogleButton from "./GoogleButton";
 import Image from "next/image";
 import Link from "next/link";
+import axios from "axios";
+import { URL_GOOGLE } from "./RegisterForm";
+import { useUserStrore } from "@/store/userStore";
+import { useRouter } from "next/navigation";
+
+const URL_PASSWORD = `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/login`;
 
 const LoginForm = () => {
-  const [user, setUser] = useState({
+  const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
+  const { setToken, setUser } = useUserStrore();
+  const router = useRouter();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setUser((prev) => ({
+    setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
+  };
+
+  const handleSubmit = async () => {
+    try {
+      const res = await axios.post(URL_PASSWORD, formData, {
+        withCredentials: true,
+      });
+      setToken(res.data.token);
+      setUser(res.data.user);
+      router.push("/play/online");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleGoogleSubmit = () => {
+    window.open(URL_GOOGLE, "_self");
   };
 
   return (
@@ -42,17 +67,17 @@ const LoginForm = () => {
           type="email"
           placeholder="email"
           name="email"
-          value={user.email}
+          value={formData.email}
           onChange={handleInputChange}
         />
         <Input
           type="password"
           placeholder="password"
           name="password"
-          value={user.password}
+          value={formData.password}
           onChange={handleInputChange}
         />
-        <Button styles=" w-72 my-2" variant="dark">
+        <Button styles=" w-72 my-2" variant="dark" onclick={handleSubmit}>
           Login
         </Button>
       </div>
@@ -62,7 +87,7 @@ const LoginForm = () => {
         <div className="flex-grow border-b border-gray-300 h-1 w-36"></div>
       </div>
       <div>
-        <GoogleButton />
+        <GoogleButton onclick={handleGoogleSubmit} />
       </div>
     </div>
   );

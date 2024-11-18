@@ -7,8 +7,8 @@ import Image from "next/image";
 import Link from "next/link";
 import axios from "axios";
 
-const URL_PASSWORD = `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/register`;
-const URL_GOOGLE = `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/google`;
+export const URL_PASSWORD = `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/register`;
+export const URL_GOOGLE = `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/google`;
 
 const RegisterForm = () => {
   const [user, setUser] = useState({

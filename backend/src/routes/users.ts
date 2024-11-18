@@ -1,9 +1,10 @@
 import { Router } from "express";
 import { db } from "../db";
+import { authMiddleware } from "../middleware/auth";
 
 const router = Router();
 
-router.get("/", async (req, res) => {
+router.get("/", authMiddleware, async (req, res) => {
   try {
     const users = await db.user.findMany();
 
