@@ -35,7 +35,7 @@ const LoginForm = () => {
       });
       setToken(res.data.token);
       setUser(res.data.user);
-      router.push("/play/online");
+      router.push("/");
     } catch (error) {
       console.log(error);
     }

@@ -15,9 +15,10 @@ wss.on("connection", function connection(ws, req) {
   const token: string = url.parse(req.url, true).query.token;
   console.log(token);
   const user = extractUser(token, ws);
-  console.log(user);
+  console.log(user?.isGuest);
   if (user !== null) {
     gameManager.addUser(user);
+    console.log("controll ");
     ws.on("close", () => {
       gameManager.removeUser(user);
     });

@@ -14,7 +14,6 @@ const GamePage = () => {
   const socket = useSocket();
   const [chess, setChess] = useState(new Chess());
   const [board, setBoard] = useState(chess.board());
-  useAuth();
 
   useEffect(() => {
     if (!socket) return;

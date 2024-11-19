@@ -34,25 +34,31 @@ const Board = ({
       setTo(squareId);
       console.log("Second click: to square set to", squareId);
 
-      socket.send(
-        JSON.stringify({
-          type: "move",
-          payload: {
-            move: {
-              from,
-              to: squareId,
+      try {
+        socket.send(
+          JSON.stringify({
+            type: "move",
+            payload: {
+              move: {
+                from,
+                to: squareId,
+              },
             },
-          },
-        })
-      );
-      chess.move({
-        from,
-        to: squareId,
-      });
-      setBoard(chess.board());
-      console.log("Move sent:", from, squareId);
-      setFrom(null);
-      setTo(null);
+          })
+        );
+        chess.move({
+          from,
+          to: squareId,
+        });
+        setBoard(chess.board());
+        console.log("Move sent:", from, squareId);
+        setFrom(null);
+        setTo(null);
+      } catch (error) {
+        console.log(error);
+        setFrom(null);
+        setTo(null);
+      }
     }
   };
 
