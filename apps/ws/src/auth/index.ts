@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import { User } from "../User";
 import { WebSocket } from "ws";
+import "dotenv/config";
 
 const secret = process.env.JWT_SECRET!;
 
@@ -14,7 +15,7 @@ export const extractUser = (token: string, ws: WebSocket): User | null => {
   try {
     const { username, userId, isGuest } = jwt.verify(
       token,
-      "a20GkWEtQnnvWk16waEj0VFo4hEWroSF"
+      secret
     ) as jwtClaims;
 
     return new User(ws, username, userId, isGuest);
