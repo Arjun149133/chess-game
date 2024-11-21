@@ -15,7 +15,6 @@ export class GameManager {
   }
 
   addUser(user: User) {
-    console.log(process.env.JWT_SECRET);
     this.users.push(user);
     this.addHandler(user.socket);
   }

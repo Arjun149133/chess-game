@@ -1,12 +1,10 @@
 import { WebSocketServer } from "ws";
 import { GameManager } from "./GameManager";
 import url from "url";
-import { config } from "dotenv";
 import { extractUser } from "./auth";
+import "dotenv/config";
 
 const wss = new WebSocketServer({ port: 8080 });
-
-config();
 
 const gameManager = new GameManager();
 
