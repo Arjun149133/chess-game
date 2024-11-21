@@ -11,14 +11,16 @@ const gameManager = new GameManager();
 wss.on("connection", function connection(ws, req) {
   //@ts-ignore
   const token: string = url.parse(req.url, true).query.token;
-  console.log(token);
   const user = extractUser(token, ws);
-  console.log(user?.isGuest);
-  if (user !== null) {
-    gameManager.addUser(user);
-    console.log("controll ");
-    ws.on("close", () => {
-      gameManager.removeUser(user);
-    });
+
+  if (!user) {
+    console.error("user not authenticated");
+    return;
   }
+
+  gameManager.addUser(user);
+
+  ws.on("close", () => {
+    gameManager.removeUser(ws);
+  });
 });

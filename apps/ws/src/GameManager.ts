@@ -1,50 +1,104 @@
 import { WebSocket } from "ws";
-import { INIT_GAME, MOVE } from "./message";
+import { EXIT_GAME, GAME_ADDED, GAME_ALERT, INIT_GAME, MOVE } from "./message";
 import { Game } from "./Game";
 import { User } from "./User";
+import { socketManager } from "./SocketManager";
 
 export class GameManager {
   private games: Game[];
   private users: User[];
-  private pendingUser: WebSocket | null;
+  private pendingGameId: string | null;
 
   constructor() {
     this.games = [];
     this.users = [];
-    this.pendingUser = null;
+    this.pendingGameId = null;
   }
 
   addUser(user: User) {
     this.users.push(user);
-    this.addHandler(user.socket);
+    this.addHandler(user);
   }
 
-  removeUser(user: User) {
+  removeUser(socket: WebSocket) {
+    const user = this.users.find((u) => u.socket === socket);
+    if (!user) {
+      console.log("No user found");
+      return;
+    }
     this.users = this.users.filter((u) => u.socket !== user.socket);
+    socketManager.removeUser(user);
   }
 
-  private addHandler(socket: WebSocket) {
-    socket.on("message", (data) => {
+  removeGame(gameId: string) {
+    this.games = this.games.filter((game) => game.gameId !== gameId);
+  }
+
+  private addHandler(user: User) {
+    user.socket.on("message", async (data) => {
       const message = JSON.parse(data.toString());
       if (message.type === INIT_GAME) {
-        if (this.pendingUser) {
-          const game = new Game(this.pendingUser, socket);
-          this.games.push(game);
-          this.pendingUser = null;
+        if (this.pendingGameId) {
+          const game = this.games.find((x) => x.gameId === this.pendingGameId);
+          if (!game) {
+            console.error("Pending game not found?");
+            return;
+          }
+          if (user.userId === game.player1UserId) {
+            socketManager.broadcast(
+              game.gameId,
+              JSON.stringify({
+                type: GAME_ALERT,
+                payload: {
+                  message: "Trying to connect to yourself?",
+                },
+              })
+            );
+            return;
+          }
+          socketManager.addUser(user, game.gameId);
+          await game.updateSecondPlayer(user.userId);
+          this.pendingGameId = null;
         } else {
-          this.pendingUser = socket;
+          const game = new Game(user.userId, null);
+          this.games.push(game);
+          this.pendingGameId = game.gameId;
+          socketManager.addUser(user, game.gameId);
+          socketManager.broadcast(
+            game.gameId,
+            JSON.stringify({
+              type: GAME_ADDED,
+              payload: {
+                gameId: game.gameId,
+              },
+            })
+          );
         }
       }
 
       if (message.type === MOVE) {
-        const game = this.games.find(
-          (game) => game.player1 === socket || game.player2 === socket
-        );
-        console.log("moving " + message.payload.move);
-        if (game) {
-          console.log("Move made" + message.payload.move);
-          game.makeMove(socket, message.payload.move);
+        const gameId = message.payload.gameId;
+        const game = this.games.find((x) => x.gameId === gameId);
+        if (!game) {
+          console.error("There was no game found to make a move"); //TODO: error handling
+          return;
         }
+        game.makeMove(user, message.payload.move);
+        if (game.result) {
+          this.removeGame(game.gameId);
+        }
+      }
+
+      if (message.type === EXIT_GAME) {
+        const gameId = message.payload.gameId;
+        const game = this.games.find((g) => g.gameId === gameId);
+
+        if (!game) {
+          console.error("There was no game found to exit");
+          return;
+        }
+        game.exitGame(user);
+        this.removeGame(game.gameId);
       }
     });
   }

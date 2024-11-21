@@ -43,7 +43,7 @@ export class Game {
   private moveCount = 0;
   private timer: NodeJS.Timeout | null = null;
   private moveTimer: NodeJS.Timeout | null = null;
-  private result: GAME_RESULT | null = null;
+  public result: GAME_RESULT | null = null;
   private player1TimeConsumed = 0;
   private player2TimeConsumed = 0;
   private startTime = new Date(Date.now());
