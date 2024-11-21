@@ -1,9 +1,16 @@
-import { Chess, Move, Square } from "chess.js";
+import { BLACK, Chess, Move, Square } from "chess.js";
 import { WebSocket } from "ws";
-import { GAME_OVER, GAME_TIME_MS, INIT_GAME, MOVE } from "./message";
+import {
+  GAME_ENDED,
+  GAME_OVER,
+  GAME_TIME_MS,
+  INIT_GAME,
+  MOVE,
+} from "./message";
 import { randomUUID } from "crypto";
 import { MoveType } from "./types";
 import { User } from "./User";
+import { socketManager } from "./SocketManager";
 
 type GAME_RESULT = "WHITE_WINS" | "BLACK_WINS" | "DRAW";
 type GAME_STATUS =
@@ -93,6 +100,20 @@ export class Game {
 
   async updateSecondPlayer(player2UserId: string) {
     this.player2UserId = player2UserId;
+
+    socketManager.broadcast(
+      this.gameId,
+      JSON.stringify({
+        type: INIT_GAME,
+        payload: {
+          gameId: this.gameId,
+          whitePlayerId: this.player1UserId,
+          blackPlayerId: this.player2UserId,
+          fen: this.board.fen(),
+          moves: [],
+        },
+      })
+    );
   }
 
   makeMove(user: User, move: Move) {
@@ -139,7 +160,17 @@ export class Game {
 
     this.lastMoveTime = moveTimeStamp;
 
-    //TODO: broadcast to users
+    socketManager.broadcast(
+      this.gameId,
+      JSON.stringify({
+        type: MOVE,
+        payload: {
+          move,
+          player1TimeConsumed: this.player1TimeConsumed,
+          player2TimeConsumed: this.player2TimeConsumed,
+        },
+      })
+    );
 
     if (this.board.isGameOver()) {
       const res = this.board.isDraw()
@@ -211,7 +242,20 @@ export class Game {
 
   endGame(status: GAME_STATUS, result: GAME_RESULT) {
     //update game on db: TODO
-    //broadcast to users: TODO
+    socketManager.broadcast(
+      this.gameId,
+      JSON.stringify({
+        type: GAME_ENDED,
+        payload: {
+          status,
+          result,
+          whitePlayerId: this.player1UserId,
+          blackPlayerId: this.player2UserId,
+          //TODO: moves: updatedGame.moves,
+          // blackPlayer, whitePlayer
+        },
+      })
+    );
 
     this.clearTimer();
     this.clearMoveTimer();
