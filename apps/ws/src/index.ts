@@ -19,8 +19,10 @@ wss.on("connection", function connection(ws, req) {
   }
 
   gameManager.addUser(user);
+  console.log("user: ", user.userId);
 
   ws.on("close", () => {
+    console.log("for the user: ", user.userId);
     gameManager.removeUser(ws);
   });
 });

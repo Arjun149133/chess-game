@@ -17,6 +17,7 @@ export class GameManager {
 
   addUser(user: User) {
     this.users.push(user);
+    this.users.map((u) => console.log("userr: ", u.userId));
     this.addHandler(user);
   }
 
@@ -35,8 +36,10 @@ export class GameManager {
   }
 
   private addHandler(user: User) {
+    console.log("we are comming here");
     user.socket.on("message", async (data) => {
       const message = JSON.parse(data.toString());
+      console.log("message: ", message);
       if (message.type === INIT_GAME) {
         if (this.pendingGameId) {
           const game = this.games.find((x) => x.gameId === this.pendingGameId);
@@ -56,14 +59,17 @@ export class GameManager {
             );
             return;
           }
+          console.log("second player");
           socketManager.addUser(user, game.gameId);
           await game.updateSecondPlayer(user.userId);
           this.pendingGameId = null;
         } else {
+          console.log("we are not comming here");
           const game = new Game(user.userId, null);
           this.games.push(game);
           this.pendingGameId = game.gameId;
           socketManager.addUser(user, game.gameId);
+          console.log("first player");
           socketManager.broadcast(
             game.gameId,
             JSON.stringify({

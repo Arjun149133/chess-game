@@ -100,7 +100,7 @@ export class Game {
 
   async updateSecondPlayer(player2UserId: string) {
     this.player2UserId = player2UserId;
-
+    console.log("updating...");
     socketManager.broadcast(
       this.gameId,
       JSON.stringify({
@@ -145,6 +145,7 @@ export class Game {
       return;
     }
 
+    //flipped coz move already made
     if (this.board.turn() === "b") {
       this.player1TimeConsumed +=
         moveTimeStamp.getTime() - this.lastMoveTime.getTime();
@@ -159,6 +160,8 @@ export class Game {
     this.resetMoveTimer();
 
     this.lastMoveTime = moveTimeStamp;
+    let moveMadeBy =
+      this.board.turn() === "b" ? this.player1UserId : this.player2UserId;
 
     socketManager.broadcast(
       this.gameId,
@@ -166,6 +169,7 @@ export class Game {
         type: MOVE,
         payload: {
           move,
+          moveMadeBy,
           player1TimeConsumed: this.player1TimeConsumed,
           player2TimeConsumed: this.player2TimeConsumed,
         },
@@ -179,9 +183,10 @@ export class Game {
         ? "WHITE_WINS"
         : "BLACK_WINS";
 
-      // this.endGame(): TODO: broadcast to users with update on db
+      //  TODO: update on db
+      this.endGame("COMPLETED", res);
     }
-
+    console.log("move made");
     this.moveCount++;
   }
 

@@ -1,3 +1,5 @@
+"use client";
+import { useGameStore } from "@/store/gameStore";
 import { Chess, Color, PieceSymbol, Square } from "chess.js";
 import Image from "next/image";
 import { useState } from "react";
@@ -19,6 +21,7 @@ const Board = ({
 }) => {
   const [from, setFrom] = useState<string | null>(null);
   const [to, setTo] = useState<string | null>(null);
+  const { gameId } = useGameStore();
 
   const handleSquareClick = (
     square: { square: string; color: Color; type: PieceSymbol } | null,
@@ -39,6 +42,7 @@ const Board = ({
           JSON.stringify({
             type: "move",
             payload: {
+              gameId: gameId,
               move: {
                 from,
                 to: squareId,
