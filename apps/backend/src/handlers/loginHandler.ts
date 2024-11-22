@@ -80,7 +80,7 @@ export const logout = (req: Request, res: Response) => {
         res.status(500).json({ message: "Logout error" });
       } else {
         res.clearCookie("token");
-        res.redirect(process.env.CLIENT_URL!);
+        res.redirect(process.env.CLIENT_URL!); //TODO: there is a cors error here
       }
     });
   } catch (error) {

@@ -13,5 +13,7 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/play/online"],
+  matcher: ["/about"],
 };
+
+//changed here something

@@ -14,7 +14,7 @@ const Navbar = () => {
   const setUser = useUserStrore((state) => state.setUser);
   const router = useRouter();
   return (
-    <div className=" flex justify-between p-3 px-7 border border-slate-900">
+    <div className=" flex justify-between p-3 px-7 border border-slate-900 ">
       <div className=" font-bold text-xl flex justify-center items-center">
         Chess
       </div>
