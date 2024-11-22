@@ -8,6 +8,7 @@ import Link from "next/link";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useUserStrore } from "@/store/userStore";
+import { toast } from "react-toastify";
 
 export const URL_PASSWORD_REGISTER = `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/register`;
 export const URL_PASSWORD_LOGIN = `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/login`;
@@ -33,15 +34,21 @@ const RegisterForm = () => {
   const handleSubmit = async () => {
     try {
       const res = await axios.post(URL_PASSWORD_REGISTER, formData);
-      const response = await axios.post(URL_PASSWORD_LOGIN, {
-        email: formData.email,
-        password: formData.password,
-      });
+      const response = await axios.post(
+        URL_PASSWORD_LOGIN,
+        {
+          email: formData.email,
+          password: formData.password,
+        },
+        { withCredentials: true }
+      );
+
+      toast("User Registered successfully", { type: "success" });
 
       setToken(response.data.token);
       setUser(response.data.user);
 
-      router.push("/play/online");
+      router.push("/");
     } catch (error) {
       console.log(error);
     }

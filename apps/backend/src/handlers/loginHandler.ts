@@ -72,13 +72,19 @@ export const loginFailed = (req: Request, res: Response) => {
 };
 
 export const logout = (req: Request, res: Response) => {
-  res.clearCookie("guest");
-  res.clearCookie("token");
-  req.logout((err) => {
-    if (err) {
-    } else {
-      res.clearCookie("token");
-      res.redirect(process.env.CLIENT_URL!);
-    }
-  });
+  try {
+    res.clearCookie("guest");
+    res.clearCookie("token");
+    req.logout((err) => {
+      if (err) {
+        res.status(500).json({ message: "Logout error" });
+      } else {
+        res.clearCookie("token");
+        res.redirect(process.env.CLIENT_URL!);
+      }
+    });
+  } catch (error) {
+    console.log("Internal server error on logout: ", error);
+    res.status(500).json({ message: "error" });
+  }
 };

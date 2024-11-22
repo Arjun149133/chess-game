@@ -9,6 +9,7 @@ import axios from "axios";
 import { URL_GOOGLE } from "./RegisterForm";
 import { useUserStrore } from "@/store/userStore";
 import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 
 const URL_PASSWORD = `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/login`;
 
@@ -33,6 +34,7 @@ const LoginForm = () => {
       const res = await axios.post(URL_PASSWORD, formData, {
         withCredentials: true,
       });
+      toast("User logged In", { type: "success", position: "bottom-right" });
       setToken(res.data.token);
       setUser(res.data.user);
       router.push("/");
