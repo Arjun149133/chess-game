@@ -1,10 +1,10 @@
 "use client";
 import Link from "next/link";
-import Button from "./Button";
 import { useUserStrore } from "@/store/userStore";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
+import CustomButton from "./Button";
 
 const URI = `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/logout`;
 
@@ -21,20 +21,20 @@ const Navbar = () => {
       {user.username === "" ? (
         <div className=" space-x-4 flex">
           <Link href={"/register"}>
-            <Button styles=" w-28" variant="dark">
-              Sign In
-            </Button>
+            <CustomButton>Register</CustomButton>
           </Link>
           <Link href={"/login"}>
-            <Button styles=" w-28">Log In</Button>
+            <CustomButton className=" bg-black hover:bg-gray-900">
+              Login
+            </CustomButton>
           </Link>
         </div>
       ) : (
         <div className=" flex justify-center items-center space-x-4">
           <div className=" capitalize text-lg">{user.username}</div>
           <div className=" text-sm text-bold">
-            <Button
-              onclick={async () => {
+            <CustomButton
+              onClick={async () => {
                 try {
                   setToken("");
                   setUser({
@@ -53,10 +53,9 @@ const Navbar = () => {
                   console.log(error);
                 }
               }}
-              styles=""
             >
               Log Out
-            </Button>
+            </CustomButton>
           </div>
         </div>
       )}

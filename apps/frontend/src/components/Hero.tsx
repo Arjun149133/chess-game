@@ -6,7 +6,7 @@ const Hero = () => {
   return (
     <div className=" flex justify-center items-center max-h-full space-x-10 p-4 mt-10">
       <div>
-        <Link href={"/play/online"}>
+        <Link href={"/play"}>
           <Image
             src="https://www.chess.com/bundles/web/images/offline-play/standardboard.1d6f9426.png"
             width={400}
@@ -23,9 +23,9 @@ const Hero = () => {
           <span className=" flex justify-center">on the #3 Site!</span>
         </div>
         <div className="flex justify-center">
-          <Link href={"/play/online"}>
-            <Button variant="dark" styles="bg-green-600 h-12 w-48 font-bold">
-              Play Online
+          <Link href={"/play"}>
+            <Button className="bg-green-600 h-12 w-48 font-bold">
+              Play Chess
             </Button>
           </Link>
         </div>

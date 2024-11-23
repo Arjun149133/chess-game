@@ -1,25 +1,23 @@
 import React from "react";
+import { Button } from "./ui/button";
 
-interface props {
+const CustomButton = ({
+  onClick,
+  className,
+  children,
+}: {
+  onClick?: () => void;
+  className?: string;
   children: React.ReactNode;
-  variant?: "dark" | "white";
-  onclick?: () => void;
-  styles?: string;
-}
-
-const Button: React.FC<props> = ({ variant, onclick, styles, children }) => {
+}) => {
   return (
-    <div
-      className={`${
-        variant === "dark"
-          ? "bg-green-800 hover:bg-green-700"
-          : "bg-slate-100 hover:bg-green-100 text-black"
-      } flex justify-center items-center p-2 hover:cursor-pointer rounded-md ${styles}`}
-      onClick={onclick}
+    <Button
+      onClick={onClick}
+      className={`w-full bg-green-800 hover:bg-green-700 text-white font-bold py-2 px-4 rounded  ${className}`}
     >
       {children}
-    </div>
+    </Button>
   );
 };
 
-export default Button;
+export default CustomButton;

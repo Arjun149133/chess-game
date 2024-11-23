@@ -1,4 +1,5 @@
 "use client";
+import { ProfileCard } from "@/app/play/page";
 import { useGameStore } from "@/store/gameStore";
 import { Chess, Color, PieceSymbol, Square } from "chess.js";
 import Image from "next/image";
@@ -110,39 +111,50 @@ const Board = ({
   }
 
   return (
-    <div className=" hover:cursor-pointer">
-      {board.map((row, i) => (
-        <div key={i} className="flex">
-          {row.map((square, j) => (
-            <button
-              key={j}
-              className={`w-16 h-16 ${
-                (i + j) % 2 === 0 ? "bg-green-300" : "bg-green-500"
-              }`}
-              onClick={() => handleSquareClick(square, i, j)}
-            >
-              {square ? (
-                <div
-                  className={`text-xl flex justify-center items-center ${
-                    square.color === "w" ? "text-white" : "text-black"
-                  }`}
-                >
-                  {fill(square.type, square.color) !== null ? (
-                    <Image
-                      src={fill(square.type, square.color)}
-                      alt={square.type}
-                      width={48}
-                      height={48}
-                    />
-                  ) : (
-                    square.type
-                  )}
-                </div>
-              ) : null}
-            </button>
-          ))}
-        </div>
-      ))}
+    <div className=" flex flex-col items-center justify-center overflow-hidden">
+      <ProfileCard
+        src="https://www.chess.com/bundles/web/images/black_400.png"
+        name="opponent"
+      />
+      <div className=" hover:cursor-pointer">
+        {board.map((row, i) => (
+          <div key={i} className="flex">
+            {row.map((square, j) => (
+              <button
+                key={j}
+                className={`w-[68px] h-[68px] ${
+                  (i + j) % 2 === 0 ? "bg-green-300" : "bg-green-500"
+                }`}
+                onClick={() => handleSquareClick(square, i, j)}
+              >
+                {square ? (
+                  <div
+                    className={`text-xl flex justify-center items-center ${
+                      square.color === "w" ? "text-white" : "text-black"
+                    }`}
+                  >
+                    {fill(square.type, square.color) !== null ? (
+                      <Image
+                        src={fill(square.type, square.color)}
+                        alt={square.type}
+                        width={48}
+                        height={48}
+                        className=" rotate-180 "
+                      />
+                    ) : (
+                      square.type
+                    )}
+                  </div>
+                ) : null}
+              </button>
+            ))}
+          </div>
+        ))}
+      </div>
+      <ProfileCard
+        src="https://www.chess.com/bundles/web/images/noavatar_l.84a92436.gif"
+        name="arjun"
+      />
     </div>
   );
 };

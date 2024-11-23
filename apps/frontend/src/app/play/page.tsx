@@ -4,7 +4,7 @@ import Image from "next/image";
 
 const PlayPage = () => {
   return (
-    <div className=" grid grid-cols-12 h-screen">
+    <div className=" grid grid-cols-12 max-h-screen">
       <div className=" col-span-2">
         <Sidebar />
       </div>
@@ -31,13 +31,13 @@ const PlayPage = () => {
         </div>
       </div>
       <div className=" col-span-5 flex items-center">
-        <Card />
+        <Card card1={true} />
       </div>
     </div>
   );
 };
 
-const ProfileCard = ({ src, name }: { src: string; name: string }) => {
+export const ProfileCard = ({ src, name }: { src: string; name: string }) => {
   return (
     <div className=" flex space-x-3 w-full py-4">
       <div>
@@ -50,7 +50,7 @@ const ProfileCard = ({ src, name }: { src: string; name: string }) => {
         />
       </div>
       <div>
-        <div className=" text-white ">{name} </div>
+        <div className=" text-white ">{name}</div>
       </div>
     </div>
   );

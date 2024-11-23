@@ -1,12 +1,14 @@
 "use client";
+import Card from "@/components/Card";
 import Game from "@/components/Game";
+import Sidebar from "@/components/Sidebar";
 import { useAuth } from "@/hooks/useAuth";
 import { useSocket } from "@/hooks/useSocket";
 import { useGameStore } from "@/store/gameStore";
 import { useUserStrore } from "@/store/userStore";
 import { Chess } from "chess.js";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 
 export const INIT_GAME = "init_game";
 const MOVE = "move";
@@ -54,19 +56,33 @@ const GamePage = () => {
     };
   }, [socket, chess, board]);
 
-  if (!socket)
-    return (
-      <div>
-        <div>
-          <Link href={"/"}>back</Link>
-        </div>
-        Loading...
-      </div>
-    );
-
   return (
-    <div>
-      <Game socket={socket} board={board} setBoard={setBoard} chess={chess} />
+    <div className="grid grid-cols-12 h-screen">
+      <div className=" col-span-2">
+        <Sidebar />
+      </div>
+      <div className=" col-span-5">
+        <Suspense fallback={<div>Loading...</div>}>
+          <Game
+            socket={socket}
+            board={board}
+            setBoard={setBoard}
+            chess={chess}
+          />
+        </Suspense>
+      </div>
+      <div className=" col-span-5 flex items-center">
+        <Card
+          card1={false}
+          onPlayButtonClick={() => {
+            socket.send(
+              JSON.stringify({
+                type: INIT_GAME,
+              })
+            );
+          }}
+        />
+      </div>
     </div>
   );
 };
