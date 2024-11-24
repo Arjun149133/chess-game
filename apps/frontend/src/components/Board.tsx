@@ -1,9 +1,10 @@
 "use client";
-import { ProfileCard } from "@/app/play/page";
 import { useGameStore } from "@/store/gameStore";
 import { Chess, Color, PieceSymbol, Square } from "chess.js";
 import Image from "next/image";
 import { useState } from "react";
+import { ProfileCard } from "./ProfileCard";
+import { useUserStrore } from "@/store/userStore";
 
 const Board = ({
   chess,
@@ -23,6 +24,7 @@ const Board = ({
   const [from, setFrom] = useState<string | null>(null);
   const [to, setTo] = useState<string | null>(null);
   const { gameId } = useGameStore();
+  const { user } = useUserStrore();
 
   const handleSquareClick = (
     square: { square: string; color: Color; type: PieceSymbol } | null,
@@ -114,7 +116,7 @@ const Board = ({
     <div className=" flex flex-col items-center justify-center overflow-hidden">
       <ProfileCard
         src="https://www.chess.com/bundles/web/images/black_400.png"
-        name="opponent"
+        username="opponent"
       />
       <div className=" hover:cursor-pointer">
         {board.map((row, i) => (
@@ -151,10 +153,7 @@ const Board = ({
           </div>
         ))}
       </div>
-      <ProfileCard
-        src="https://www.chess.com/bundles/web/images/noavatar_l.84a92436.gif"
-        name="arjun"
-      />
+      <ProfileCard src={user?.picture} username={user?.username} />
     </div>
   );
 };

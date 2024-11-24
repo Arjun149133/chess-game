@@ -1,4 +1,5 @@
 import Card from "@/components/Card";
+import { ProfileCard } from "@/components/ProfileCard";
 import Image from "next/image";
 
 const PlayPage = () => {
@@ -9,7 +10,7 @@ const PlayPage = () => {
           <div>
             <ProfileCard
               src="https://www.chess.com/bundles/web/images/black_400.png"
-              name="opponent"
+              username="opponent"
             />
             <Image
               src="https://www.chess.com/bundles/web/images/offline-play/standardboard.1d6f9426.png"
@@ -20,7 +21,7 @@ const PlayPage = () => {
             />
             <ProfileCard
               src="https://www.chess.com/bundles/web/images/noavatar_l.84a92436.gif"
-              name="arjun"
+              username="arjun"
             />
           </div>
           <div></div>
@@ -30,25 +31,6 @@ const PlayPage = () => {
         <Card card1={true} />
       </div>
     </>
-  );
-};
-
-export const ProfileCard = ({ src, name }: { src: string; name: string }) => {
-  return (
-    <div className=" flex space-x-3 w-full py-4">
-      <div>
-        <Image
-          src={src}
-          width={50}
-          height={50}
-          alt="opponent"
-          className=" cursor-pointer"
-        />
-      </div>
-      <div>
-        <div className=" text-white ">{name}</div>
-      </div>
-    </div>
   );
 };
 

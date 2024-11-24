@@ -75,6 +75,7 @@ export const logout = (req: Request, res: Response) => {
   try {
     res.clearCookie("guest");
     res.clearCookie("token");
+    console.log("cleared cookies");
     req.logout((err) => {
       if (err) {
         res.status(500).json({ message: "Logout error" });

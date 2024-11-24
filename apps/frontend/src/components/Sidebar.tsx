@@ -18,26 +18,26 @@ const Sidebar = () => {
       <div className=" m-2 p-2">
         <h1 className=" text-white text-2xl font-bold p-4">Chess</h1>
       </div>
-      {token ? (
+      {token && !user?.isGuest ? (
         <div className=" flex flex-1 items-end py-4 w-full justify-center">
           <div className=" flex justify-center items-center w-full gap-4 border-t border-gray-500 py-4">
             <div
               className=" w-8 h-8 cursor-pointer"
               onClick={async () => {
                 try {
-                  const res = await axios.get("/api/logout");
-                  setToken("");
-                  setUser({
-                    username: "",
-                    id: "",
-                    email: "",
-                    picture: undefined,
-                  });
+                  setToken(null);
+                  setUser(null);
                   toast("User logout successfull", {
                     type: "success",
                     position: "bottom-right",
                   });
                   router.push("/");
+                  const res = await axios.get(
+                    `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/logout`,
+                    {
+                      withCredentials: true,
+                    }
+                  );
                 } catch (error) {
                   console.log(error);
                 }

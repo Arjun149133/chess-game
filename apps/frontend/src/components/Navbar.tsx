@@ -36,15 +36,19 @@ const Navbar = () => {
             <CustomButton
               onClick={async () => {
                 try {
-                  const res = await axios.get("/api/logout");
                   setToken(null);
                   setUser(null);
-                  console.log(res.data);
                   toast("User logout successfull", {
                     type: "success",
                     position: "bottom-right",
                   });
                   router.push("/");
+                  const res = await axios.get(
+                    `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/logout`,
+                    {
+                      withCredentials: true,
+                    }
+                  );
                 } catch (error) {
                   console.log(error);
                 }
