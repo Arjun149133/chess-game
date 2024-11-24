@@ -1,9 +1,12 @@
 "use client";
-
-import { useAuth } from "@/hooks/useAuth";
+import { useUserStrore } from "@/store/userStore";
+import { useEffect } from "react";
 
 const AuthListener = () => {
-  useAuth();
+  const { fetchUser } = useUserStrore();
+  useEffect(() => {
+    fetchUser();
+  }, [fetchUser]);
   return null;
 };
 

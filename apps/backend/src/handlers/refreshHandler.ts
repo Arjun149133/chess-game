@@ -20,6 +20,7 @@ export const refreshHandler = async (req: Request, res: Response) => {
       username: user.username,
       email: user.email,
       picture: user.picture,
+      isGuest: false,
     });
   } else if (req.cookies && req.cookies.token) {
     const decoded = jwt.verify(
@@ -35,7 +36,7 @@ export const refreshHandler = async (req: Request, res: Response) => {
     const user: UserDetails = {
       username: decoded.username,
       id: decoded.userId,
-      isGuest: true,
+      isGuest: false,
       token: token,
     };
 

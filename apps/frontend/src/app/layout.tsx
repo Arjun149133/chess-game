@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import "./globals.css";
-import AuthListener from "@/lib/AuthListener";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import "./globals.css";
+import AuthListener from "@/lib/AuthListener";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",

@@ -47,7 +47,10 @@ const RegisterForm = () => {
       toast("User Registered successfully", { type: "success" });
 
       setToken(response.data.token);
-      setUser(response.data.user);
+      setUser({
+        ...response.data.user,
+        isGuest: false,
+      });
 
       router.push("/");
     } catch (error) {

@@ -2,13 +2,10 @@
 import Card from "@/components/Card";
 import Game from "@/components/Game";
 import LoginDialog from "@/components/LoginDialog";
-import Sidebar from "@/components/Sidebar";
-import { useAuth } from "@/hooks/useAuth";
 import { useSocket } from "@/hooks/useSocket";
 import { useGameStore } from "@/store/gameStore";
 import { useUserStrore } from "@/store/userStore";
 import { Chess } from "chess.js";
-import Link from "next/link";
 import { Suspense, useEffect, useState } from "react";
 
 export const INIT_GAME = "init_game";
@@ -21,7 +18,11 @@ const GamePage = () => {
   const [chess, setChess] = useState(new Chess());
   const [board, setBoard] = useState(chess.board());
   const setGameId = useGameStore((state) => state.setGameId);
-  const { user } = useUserStrore();
+  const { fetchUser, user } = useUserStrore();
+
+  useEffect(() => {
+    fetchUser();
+  }, [fetchUser]);
 
   useEffect(() => {
     if (!socket) return;
@@ -43,7 +44,7 @@ const GamePage = () => {
           console.log(message);
           const move = message.payload.move;
           console.log(move);
-          if (message.payload.moveMadeBy !== user.id) {
+          if (message.payload.moveMadeBy !== user?.id) {
             chess.move(move);
             console.log("Move made" + move);
             setBoard(chess.board());

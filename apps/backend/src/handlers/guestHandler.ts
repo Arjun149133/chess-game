@@ -31,6 +31,7 @@ export const guestHandler = async (req: Request, res: Response) => {
     res.json({
       user: guestUser,
       token: token,
+      isGuest: true,
     });
   } catch (error) {
     console.log(error);

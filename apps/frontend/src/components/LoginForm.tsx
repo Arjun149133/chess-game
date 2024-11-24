@@ -36,7 +36,10 @@ const LoginForm = () => {
       });
       toast("User logged In", { type: "success", position: "bottom-right" });
       setToken(res.data.token);
-      setUser(res.data.user);
+      setUser({
+        ...res.data.user,
+        isGuest: false,
+      });
       router.push("/");
     } catch (error) {
       console.log(error);

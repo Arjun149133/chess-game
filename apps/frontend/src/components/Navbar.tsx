@@ -18,7 +18,7 @@ const Navbar = () => {
       <div className=" font-bold text-xl flex justify-center items-center">
         Chess
       </div>
-      {user.username === "" ? (
+      {user === null ? (
         <div className=" space-x-4 flex">
           <Link href={"/register"}>
             <CustomButton variant="secondary">Register</CustomButton>
@@ -36,14 +36,10 @@ const Navbar = () => {
             <CustomButton
               onClick={async () => {
                 try {
-                  setToken("");
-                  setUser({
-                    username: "",
-                    id: "",
-                    email: "",
-                    picture: undefined,
-                  });
-                  const res = await axios.get(URI, { withCredentials: true });
+                  const res = await axios.get("/api/logout");
+                  setToken(null);
+                  setUser(null);
+                  console.log(res.data);
                   toast("User logout successfull", {
                     type: "success",
                     position: "bottom-right",
