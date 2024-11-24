@@ -1,6 +1,7 @@
 "use client";
 import Card from "@/components/Card";
 import Game from "@/components/Game";
+import LoginDialog from "@/components/LoginDialog";
 import Sidebar from "@/components/Sidebar";
 import { useAuth } from "@/hooks/useAuth";
 import { useSocket } from "@/hooks/useSocket";
@@ -56,11 +57,12 @@ const GamePage = () => {
     };
   }, [socket, chess, board]);
 
+  if (!socket) {
+    return <LoginDialog />;
+  }
+
   return (
-    <div className="grid grid-cols-12 h-screen">
-      <div className=" col-span-2">
-        <Sidebar />
-      </div>
+    <>
       <div className=" col-span-5">
         <Suspense fallback={<div>Loading...</div>}>
           <Game
@@ -83,7 +85,7 @@ const GamePage = () => {
           }}
         />
       </div>
-    </div>
+    </>
   );
 };
 

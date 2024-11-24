@@ -1,13 +1,9 @@
 import Card from "@/components/Card";
-import Sidebar from "@/components/Sidebar";
 import Image from "next/image";
 
 const PlayPage = () => {
   return (
-    <div className=" grid grid-cols-12 max-h-screen">
-      <div className=" col-span-2">
-        <Sidebar />
-      </div>
+    <>
       <div className=" col-span-5">
         <div className=" flex flex-col items-center justify-center h-full ">
           <div>
@@ -33,7 +29,7 @@ const PlayPage = () => {
       <div className=" col-span-5 flex items-center">
         <Card card1={true} />
       </div>
-    </div>
+    </>
   );
 };
 

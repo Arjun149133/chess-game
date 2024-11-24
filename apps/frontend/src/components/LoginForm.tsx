@@ -1,6 +1,5 @@
 "use client";
-import React, { use, useEffect, useState } from "react";
-import Button from "./Button";
+import React, { useState } from "react";
 import Input from "./Input";
 import GoogleButton from "./GoogleButton";
 import Image from "next/image";
@@ -10,6 +9,7 @@ import { URL_GOOGLE } from "./RegisterForm";
 import { useUserStrore } from "@/store/userStore";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
+import CustomButton from "./Button";
 
 const URL_PASSWORD = `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/login`;
 
@@ -79,9 +79,9 @@ const LoginForm = () => {
           value={formData.password}
           onChange={handleInputChange}
         />
-        <Button styles=" w-72 my-2" variant="dark" onclick={handleSubmit}>
+        <CustomButton onClick={handleSubmit} className=" md:w-72 my-2 py-4">
           Login
-        </Button>
+        </CustomButton>
       </div>
       <div className="flex items-center my-4">
         <div className="flex-grow border-b border-gray-300 h-1 w-36"></div>

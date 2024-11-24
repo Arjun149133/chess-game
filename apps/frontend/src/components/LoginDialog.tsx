@@ -1,56 +1,26 @@
-import { Copy } from "lucide-react";
+import CustomButton from "./Button";
+import { Button } from "./ui/button";
 
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-
-export function DialogCloseButton() {
+const LoginDialog = () => {
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="outline">Share</Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>Share link</DialogTitle>
-          <DialogDescription>
-            Anyone who has this link will be able to view this.
-          </DialogDescription>
-        </DialogHeader>
-        <div className="flex items-center space-x-2">
-          <div className="grid flex-1 gap-2">
-            <Label htmlFor="link" className="sr-only">
-              Link
-            </Label>
-            <Input
-              id="link"
-              defaultValue="https://ui.shadcn.com/docs/installation"
-              readOnly
-            />
-          </div>
-          <Button type="submit" size="sm" className="px-3">
-            <span className="sr-only">Copy</span>
-            <Copy />
+    <>
+      <div className=" h-screen w-screen absolute bg-dark opacity-80"></div>
+      <div className=" absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 min-h-fit md:w-72 min-w-fit rounded-lg p-8 bg-dark">
+        <div className=" flex flex-col gap-4">
+          <CustomButton variant="secondary" className=" py-6">
+            Register
+          </CustomButton>{" "}
+          <CustomButton className=" py-6">Login</CustomButton>
+          <Button
+            variant="ghost"
+            className=" hover:bg-transparent hover:text-slate-300 md:text-lg"
+          >
+            Play as a Guest
           </Button>
         </div>
-        <DialogFooter className="sm:justify-start">
-          <DialogClose asChild>
-            <Button type="button" variant="secondary">
-              Close
-            </Button>
-          </DialogClose>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+      </div>
+    </>
   );
-}
+};
+
+export default LoginDialog;

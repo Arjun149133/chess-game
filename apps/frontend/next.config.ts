@@ -9,6 +9,14 @@ const nextConfig: NextConfig = {
     ],
   },
   /* config options here */
+  async rewrites() {
+    return [
+      {
+        source: "/:path*",
+        destination: "http://locahost:5000/:path*",
+      },
+    ];
+  },
 };
 
 export default nextConfig;

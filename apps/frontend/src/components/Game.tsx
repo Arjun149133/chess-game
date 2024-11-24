@@ -1,9 +1,5 @@
-import { INIT_GAME } from "@/screens/GamePage";
 import Board from "./Board";
-import Button from "./Button";
 import { Chess } from "chess.js";
-import { ProfileCard } from "@/app/play/page";
-
 const Game = ({
   socket,
   board,

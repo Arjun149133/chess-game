@@ -21,7 +21,7 @@ const Navbar = () => {
       {user.username === "" ? (
         <div className=" space-x-4 flex">
           <Link href={"/register"}>
-            <CustomButton>Register</CustomButton>
+            <CustomButton variant="secondary">Register</CustomButton>
           </Link>
           <Link href={"/login"}>
             <CustomButton className=" bg-black hover:bg-gray-900">
