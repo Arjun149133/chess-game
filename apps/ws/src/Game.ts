@@ -11,6 +11,8 @@ import { randomUUID } from "crypto";
 import { MoveType } from "./types";
 import { User } from "./User";
 import { socketManager } from "./SocketManager";
+import { db } from "./db";
+import { idText } from "typescript";
 
 type GAME_RESULT = "WHITE_WINS" | "BLACK_WINS" | "DRAW";
 type GAME_STATUS =
@@ -100,15 +102,41 @@ export class Game {
 
   async updateSecondPlayer(player2UserId: string) {
     this.player2UserId = player2UserId;
-    console.log("updating...");
+
+    const users = await db.user.findMany({
+      where: {
+        id: {
+          in: [this.player1UserId, this.player2UserId ?? ""],
+        },
+      },
+    });
+
+    try {
+      await this.createGameInDb();
+    } catch (error) {
+      console.error(error);
+      return;
+    }
+
+    const whitePlayer = users.find((user) => user.id === this.player1UserId);
+    const blackPlayer = users.find((user) => user.id === this.player2UserId);
+
     socketManager.broadcast(
       this.gameId,
       JSON.stringify({
         type: INIT_GAME,
         payload: {
           gameId: this.gameId,
-          whitePlayerId: this.player1UserId,
-          blackPlayerId: this.player2UserId,
+          whitePlayer: {
+            name: whitePlayer?.username,
+            id: this.player1UserId,
+            isGuest: whitePlayer?.provider === "Guest",
+          },
+          blackPlayer: {
+            name: blackPlayer?.username,
+            id: this.player2UserId,
+            isGuest: blackPlayer?.provider === "Guest",
+          },
           fen: this.board.fen(),
           moves: [],
         },
@@ -116,7 +144,63 @@ export class Game {
     );
   }
 
-  makeMove(user: User, move: Move) {
+  async createGameInDb() {
+    this.startTime = new Date(Date.now());
+    this.lastMoveTime = this.startTime;
+
+    const game = await db.game.create({
+      data: {
+        id: this.gameId,
+        timeControl: "CLASSICAL",
+        status: "IN_PROGRESS",
+        startAt: this.startTime,
+        currentFen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+        whitePlayer: {
+          connect: {
+            id: this.player1UserId,
+          },
+        },
+        blackPlayer: {
+          connect: {
+            id: this.player2UserId ?? "",
+          },
+        },
+      },
+      include: {
+        whitePlayer: true,
+        blackPlayer: true,
+      },
+    });
+    this.gameId = game.id;
+  }
+
+  async addMoveToDb(move: Move, moveTimeStamp: Date) {
+    await db.$transaction([
+      db.move.create({
+        data: {
+          gameId: this.gameId,
+          moveNumber: this.moveCount + 1,
+          from: move.from,
+          to: move.to,
+          before: move.before,
+          after: move.after,
+          createdAt: moveTimeStamp,
+          timeTaken: moveTimeStamp.getTime() - this.lastMoveTime.getTime(),
+          san: move.san,
+        },
+      }),
+      db.game.update({
+        data: {
+          currentFen: move.after,
+        },
+        where: {
+          id: this.gameId,
+        },
+      }),
+    ]);
+  }
+
+  async makeMove(user: User, move: Move) {
     if (this.board.turn() === "w" && user.userId !== this.player1UserId) return;
     if (this.board.turn() === "b" && user.userId !== this.player2UserId) return;
 
@@ -155,7 +239,7 @@ export class Game {
         moveTimeStamp.getTime() - this.lastMoveTime.getTime();
     }
 
-    //TODO: add move to db
+    await this.addMoveToDb(move, moveTimeStamp);
     this.resetAbandonTimer();
     this.resetMoveTimer();
 
@@ -183,7 +267,6 @@ export class Game {
         ? "WHITE_WINS"
         : "BLACK_WINS";
 
-      //  TODO: update on db
       this.endGame("COMPLETED", res);
     }
     console.log("move made");
@@ -245,8 +328,25 @@ export class Game {
     );
   }
 
-  endGame(status: GAME_STATUS, result: GAME_RESULT) {
-    //update game on db: TODO
+  async endGame(status: GAME_STATUS, result: GAME_RESULT) {
+    const updatedGame = await db.game.update({
+      data: {
+        status,
+        result,
+      },
+      where: {
+        id: this.gameId,
+      },
+      include: {
+        moves: {
+          orderBy: {
+            moveNumber: "asc",
+          },
+        },
+        blackPlayer: true,
+        whitePlayer: true,
+      },
+    });
     socketManager.broadcast(
       this.gameId,
       JSON.stringify({
@@ -254,10 +354,15 @@ export class Game {
         payload: {
           status,
           result,
-          whitePlayerId: this.player1UserId,
-          blackPlayerId: this.player2UserId,
-          //TODO: moves: updatedGame.moves,
-          // blackPlayer, whitePlayer
+          moves: updatedGame.moves,
+          blackPlayer: {
+            id: updatedGame.blackPlayerId,
+            username: updatedGame.blackPlayer.username,
+          },
+          whitePlayer: {
+            id: updatedGame.whitePlayerId,
+            username: updatedGame.whitePlayer.username,
+          },
         },
       })
     );
