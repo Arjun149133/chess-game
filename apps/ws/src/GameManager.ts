@@ -1,8 +1,19 @@
 import { WebSocket } from "ws";
-import { EXIT_GAME, GAME_ADDED, GAME_ALERT, INIT_GAME, MOVE } from "./message";
+import {
+  EXIT_GAME,
+  GAME_ADDED,
+  GAME_ALERT,
+  GAME_ENDED,
+  GAME_JOINED,
+  GAME_NOT_FOUND,
+  INIT_GAME,
+  JOIN_ROOM,
+  MOVE,
+} from "./message";
 import { Game } from "./Game";
 import { User } from "./User";
 import { socketManager } from "./SocketManager";
+import { db } from "./db";
 
 export class GameManager {
   private games: Game[];
@@ -105,6 +116,99 @@ export class GameManager {
         }
         game.exitGame(user);
         this.removeGame(game.gameId);
+      }
+
+      if (message.type === JOIN_ROOM) {
+        const gameId = message.payload.gameId;
+        if (!gameId) return;
+
+        let availableGame = this.games.find((game) => game.gameId === gameId);
+        const gameFromDb = await db.game.findUnique({
+          where: {
+            id: gameId,
+          },
+          include: {
+            moves: {
+              orderBy: {
+                moveNumber: "asc",
+              },
+            },
+            blackPlayer: true,
+            whitePlayer: true,
+          },
+        });
+
+        if (availableGame && !availableGame.player2UserId) {
+          socketManager.addUser(user, availableGame.gameId);
+          await availableGame.updateSecondPlayer(user.userId);
+          return;
+        }
+
+        if (!gameFromDb) {
+          user.socket.send(
+            JSON.stringify({
+              type: GAME_NOT_FOUND,
+            })
+          );
+          return;
+        }
+
+        if (gameFromDb.status === "IN_PROGRESS") {
+          user.socket.send(
+            JSON.stringify({
+              type: GAME_ENDED,
+              payload: {
+                result: gameFromDb.result,
+                status: gameFromDb.status,
+                moves: gameFromDb.moves,
+                blackPlayer: {
+                  id: gameFromDb.blackPlayer.id,
+                  name: gameFromDb.blackPlayer.username,
+                },
+                whitePlayer: {
+                  id: gameFromDb.whitePlayer.id,
+                  name: gameFromDb.whitePlayer.username,
+                },
+              },
+            })
+          );
+          return;
+        }
+
+        if (!availableGame) {
+          const game = new Game(
+            gameFromDb.whitePlayerId,
+            gameFromDb.blackPlayerId,
+            gameFromDb.id,
+            gameFromDb.startAt
+          );
+
+          game.seedMoves(gameFromDb.moves || []);
+          this.games.push(game);
+          availableGame = game;
+        }
+
+        user.socket.send(
+          JSON.stringify({
+            type: GAME_JOINED,
+            payload: {
+              gameId,
+              moves: gameFromDb.moves,
+              blackPlayer: {
+                id: gameFromDb.blackPlayer.id,
+                name: gameFromDb.blackPlayer.username,
+              },
+              whitePlayer: {
+                id: gameFromDb.whitePlayer.id,
+                name: gameFromDb.whitePlayer.username,
+              },
+              player1TimeConsumed: availableGame.getPlayer1TimeConsumed(),
+              player2TimeConsumed: availableGame.getPlayer2TimeConsumed(),
+            },
+          })
+        );
+
+        socketManager.addUser(user, gameId);
       }
     });
   }

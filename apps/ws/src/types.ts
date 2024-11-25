@@ -3,7 +3,7 @@ export interface MoveType {
   gameId: string;
   from: string;
   to: string;
-  comments: string | null;
+  comment: string | null;
   timeTaken: number | null;
   createdAt: Date;
   promotion?: string;
