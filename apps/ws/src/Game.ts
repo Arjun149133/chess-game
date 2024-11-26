@@ -128,12 +128,12 @@ export class Game {
         payload: {
           gameId: this.gameId,
           whitePlayer: {
-            name: whitePlayer?.username,
+            username: whitePlayer?.username,
             id: this.player1UserId,
             isGuest: whitePlayer?.provider === "Guest",
           },
           blackPlayer: {
-            name: blackPlayer?.username,
+            username: blackPlayer?.username,
             id: this.player2UserId,
             isGuest: blackPlayer?.provider === "Guest",
           },
@@ -175,29 +175,33 @@ export class Game {
   }
 
   async addMoveToDb(move: Move, moveTimeStamp: Date) {
-    await db.$transaction([
-      db.move.create({
-        data: {
-          gameId: this.gameId,
-          moveNumber: this.moveCount + 1,
-          from: move.from,
-          to: move.to,
-          before: move.before,
-          after: move.after,
-          createdAt: moveTimeStamp,
-          timeTaken: moveTimeStamp.getTime() - this.lastMoveTime.getTime(),
-          san: move.san,
-        },
-      }),
-      db.game.update({
-        data: {
-          currentFen: move.after,
-        },
-        where: {
-          id: this.gameId,
-        },
-      }),
-    ]);
+    try {
+      await db.$transaction([
+        db.move.create({
+          data: {
+            gameId: this.gameId,
+            moveNumber: this.moveCount + 1,
+            from: move.from,
+            to: move.to,
+            before: move.before,
+            after: move.after,
+            createdAt: moveTimeStamp,
+            timeTaken: moveTimeStamp.getTime() - this.lastMoveTime.getTime(),
+            san: move.san,
+          },
+        }),
+        db.game.update({
+          data: {
+            currentFen: move.after,
+          },
+          where: {
+            id: this.gameId,
+          },
+        }),
+      ]);
+    } catch (error) {
+      console.error("error while adding move to db: ", error);
+    }
   }
 
   async makeMove(user: User, move: Move) {
@@ -239,7 +243,10 @@ export class Game {
         moveTimeStamp.getTime() - this.lastMoveTime.getTime();
     }
 
+    console.log("controle here");
+
     await this.addMoveToDb(move, moveTimeStamp);
+    console.log("control not reached here");
     this.resetAbandonTimer();
     this.resetMoveTimer();
 

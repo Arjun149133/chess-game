@@ -6,6 +6,9 @@ const nextConfig: NextConfig = {
       {
         hostname: "www.chess.com",
       },
+      {
+        hostname: "lh3.googleusercontent.com",
+      },
     ],
   },
   /* config options here */

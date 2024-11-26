@@ -1,28 +1,31 @@
+"use client";
 import Image from "next/image";
 import { Button } from "./ui/button";
 import DropDownButton from "./DropDownButton";
 import Link from "next/link";
-
-const match = false;
-
-const moves = [
-  { from: "e2", to: "e4" },
-  { from: "e7", to: "e5" },
-  { from: "g1", to: "f3" },
-  { from: "b8", to: "c6" },
-  { from: "f1", to: "c4" },
-  { from: "g8", to: "f6" },
-  { from: "e1", to: "g1" },
-  { from: "f8", to: "e7" },
-];
+import { useEffect, useRef } from "react";
+import { Move } from "chess.js";
 
 const Card = ({
   card1,
+  gameId,
+  moves,
   onPlayButtonClick,
 }: {
   card1: boolean;
+  gameId?: string | null;
+  moves?: Move[];
   onPlayButtonClick?: () => void;
 }) => {
+  const messageEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (messageEndRef.current) {
+      messageEndRef.current.scrollIntoView({ behavior: "smooth" });
+      console.log("height: ", messageEndRef.current.scrollHeight);
+    }
+  }, [moves]);
+
   return (
     <div className=" h-3/4 bg-dark w-2/3 rounded-lg flex flex-col items-center space-y-4 py-7">
       {card1 ? (
@@ -48,7 +51,7 @@ const Card = ({
         </>
       ) : (
         <>
-          {match ? (
+          {gameId ? (
             <div className=" flex flex-col justify-center items-center">
               <h1 className=" md:text-xl font-bold mb-4">Match</h1>
               <div>
@@ -59,17 +62,21 @@ const Card = ({
                   <span>from</span>
                   <span>to</span>
                 </div>
-                {moves.map((move, index) => (
-                  <div
-                    className={`md:w-96 flex rounded-sm justify-between px-4 py-2 mx-2 my-1 ${
-                      index % 2 === 0 ? "" : " bg-black"
-                    }`}
-                  >
-                    <span>{index + 1}.</span>
-                    <span>{move.from} </span>
-                    <span>{move.to} </span>
-                  </div>
-                ))}
+                <div className=" overflow-y-scroll max-h-80">
+                  {moves?.map((move, index) => (
+                    <div
+                      key={index}
+                      className={`md:w-96 flex rounded-sm justify-between px-4 py-2 mx-2 my-1 ${
+                        index % 2 === 0 ? "" : " bg-black"
+                      }`}
+                    >
+                      <span>{index + 1}.</span>
+                      <span>{move.from} </span>
+                      <span>{move.to} </span>
+                    </div>
+                  ))}
+                  <div ref={messageEndRef} />
+                </div>
               </div>
             </div>
           ) : (
