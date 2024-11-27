@@ -20,7 +20,7 @@ const CustomButton = ({
   return (
     <Button
       onClick={onClick}
-      className={`flex items-center justify-center w-full ${variants[variant]} text-white py-2 px-4 rounded font-light  ${className}`}
+      className={`flex items-center justify-center w-full ${variants[variant]} text-white py-2 px-4 rounded font-light transform duration-300 ${className}`}
     >
       {children}
     </Button>

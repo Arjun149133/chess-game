@@ -5,17 +5,20 @@ import DropDownButton from "./DropDownButton";
 import Link from "next/link";
 import { useEffect, useRef } from "react";
 import { Move } from "chess.js";
+import CustomButton from "./Button";
 
 const Card = ({
   card1,
   gameId,
   moves,
   onPlayButtonClick,
+  onResignButtonClick,
 }: {
   card1: boolean;
   gameId?: string | null;
   moves?: Move[];
   onPlayButtonClick?: () => void;
+  onResignButtonClick?: () => void;
 }) => {
   const messageEndRef = useRef<HTMLDivElement>(null);
 
@@ -54,7 +57,7 @@ const Card = ({
           {gameId ? (
             <div className=" flex flex-col justify-center items-center">
               <h1 className=" md:text-xl font-bold mb-4">Match</h1>
-              <div>
+              <div className=" flex flex-col min-h-3/4 flex-1">
                 <div
                   className={`md:w-96 flex rounded-sm justify-between px-4 py-2 mx-2 my-1 capitalize font-normal`}
                 >
@@ -62,7 +65,7 @@ const Card = ({
                   <span>from</span>
                   <span>to</span>
                 </div>
-                <div className=" overflow-y-scroll max-h-80">
+                <div className=" flex flex-col flex-grow flex-1 overflow-y-scroll max-h-80">
                   {moves?.map((move, index) => (
                     <div
                       key={index}
@@ -77,6 +80,11 @@ const Card = ({
                   ))}
                   <div ref={messageEndRef} />
                 </div>
+              </div>
+              <div className=" flex w-48">
+                <CustomButton onClick={onResignButtonClick}>
+                  Resign
+                </CustomButton>
               </div>
             </div>
           ) : (

@@ -1,3 +1,4 @@
+import { GAME_RESULT, GAME_STATUS } from "@/utils/utils";
 import { Move } from "chess.js";
 import { create } from "zustand";
 
@@ -15,6 +16,8 @@ export interface Game {
   player2TimeConsumed?: number;
   fen?: string;
   moves?: Move[];
+  status?: GAME_STATUS;
+  result?: GAME_RESULT;
 }
 
 export interface Payload {

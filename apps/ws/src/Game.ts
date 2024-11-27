@@ -1,18 +1,10 @@
-import { BLACK, Chess, Move, Square } from "chess.js";
-import { WebSocket } from "ws";
-import {
-  GAME_ENDED,
-  GAME_OVER,
-  GAME_TIME_MS,
-  INIT_GAME,
-  MOVE,
-} from "./message";
+import { Chess, Move, Square } from "chess.js";
+import { GAME_ENDED, GAME_TIME_MS, INIT_GAME, MOVE } from "./message";
 import { randomUUID } from "crypto";
 import { MoveType } from "./types";
 import { User } from "./User";
 import { socketManager } from "./SocketManager";
 import { db } from "./db";
-import { idText } from "typescript";
 
 type GAME_RESULT = "WHITE_WINS" | "BLACK_WINS" | "DRAW";
 type GAME_STATUS =
@@ -27,14 +19,17 @@ export function isPromoting(chess: Chess, from: Square, to: Square) {
 
   const piece = chess.get(from);
 
+  // Ensure the piece is a pawn and it's the correct player's turn
   if (piece.type !== "p") return false;
   if (piece.color !== chess.turn()) return false;
 
-  if (!["1", "8"].some((ele) => to.endsWith(ele))) return false;
+  // Ensure the destination square is in the promotion rank (1st or 8th)
+  const promotionRank = piece.color === "w" ? "8" : "1"; // White promotes to 8th rank, Black to 1st rank
+  if (!to.endsWith(promotionRank)) return false;
 
-  return chess
-    .moves({ square: from, verbose: true })
-    .some((move) => move.to === to);
+  // Check if the move is valid and is a promotion move
+  const validMoves = chess.moves({ square: from, verbose: true });
+  return validMoves.some((move) => move.to === to && move.promotion);
 }
 
 export class Game {
@@ -304,13 +299,14 @@ export class Game {
     if (this.timer) {
       clearTimeout(this.timer);
     }
-
+    console.log("this was called");
     this.timer = setTimeout(() => {
+      console.log("this wasn't");
       this.endGame(
         "ABANDONED",
         this.board.turn() === "b" ? "WHITE_WINS" : "BLACK_WINS"
       );
-    }, 60 * 1000);
+    }, 10 * 1000); //Change
   }
 
   async resetMoveTimer() {
