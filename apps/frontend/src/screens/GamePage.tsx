@@ -5,6 +5,7 @@ import GameOverDialog from "@/components/GameOverDailog";
 import LoginDialog from "@/components/LoginDialog";
 import { useSocket } from "@/hooks/useSocket";
 import { Game as GameType, useGameStore } from "@/store/gameStore";
+import { useClockStore } from "@/store/useClockStore";
 import { useUserStrore } from "@/store/userStore";
 import { Chess, Move } from "chess.js";
 import { useParams, useRouter } from "next/navigation";
@@ -15,6 +16,7 @@ const MOVE = "move";
 const GAME_ENDED = "game_ended";
 const GAME_ADDED = "game_added";
 const EXIT_GAME = "exit_game";
+const PLAYER_TIME = "player_time";
 
 const GamePage = () => {
   const socket = useSocket();
@@ -28,6 +30,7 @@ const GamePage = () => {
   const router = useRouter();
   const params = useParams();
   const gameRef = useRef<GameType | null>(null);
+  const { startStopClock1, startStopClock2 } = useClockStore();
 
   useEffect(() => {
     fetchUser();
@@ -80,6 +83,7 @@ const GamePage = () => {
           };
           handleGameStateSet(newGame);
           setBoard(chess.board());
+          startStopClock1();
           console.log("Game Initialized: ", message);
           break;
         case MOVE:
@@ -100,9 +104,20 @@ const GamePage = () => {
           };
 
           setGame(gameRef.current);
+          startStopClock1();
+          startStopClock2();
           console.log("Move made: ", game);
           console.log("Move maderef: ", gameRef.current);
 
+          break;
+        case PLAYER_TIME:
+          console.log("lanj: ", payload);
+          if (!gameRef.current) return;
+          gameRef.current = {
+            ...gameRef.current,
+            timer1: payload.player1TimeCount,
+            timer2: payload.player2TimeCount,
+          };
           break;
         case GAME_ENDED:
           console.log("game ended", payload);
@@ -152,6 +167,7 @@ const GamePage = () => {
         </Suspense>
       </div>
       <div className=" col-span-5 flex items-center">
+        {gameRef.current?.timer1} <br /> {gameRef.current?.timer2} <br />
         <Card
           card1={false}
           gameId={gameId}

@@ -7,10 +7,10 @@ export const ProfileCard = ({
   src?: string;
   username?: string;
 }) => {
-  if (!username) return null;
-  if (username.length > 15) {
-    username = username.slice(0, 10) + "...";
-  }
+  // if (!username) return null;
+  // if (username.length > 15) {
+  //   username = username.slice(0, 10) + "...";
+  // }
   return (
     <div className=" flex space-x-3 w-full py-4">
       <div>

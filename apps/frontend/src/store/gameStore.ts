@@ -18,6 +18,8 @@ export interface Game {
   moves?: Move[];
   status?: GAME_STATUS;
   result?: GAME_RESULT;
+  timer1?: number;
+  timer2?: number;
 }
 
 export interface Payload {

@@ -2,9 +2,11 @@
 import { useGameStore } from "@/store/gameStore";
 import { Chess, Color, PieceSymbol, Square } from "chess.js";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { Ref, useEffect, useRef, useState } from "react";
 import { ProfileCard } from "./ProfileCard";
 import { useUserStrore } from "@/store/userStore";
+import Clock from "./Clock";
+import { useClockStore } from "@/store/useClockStore";
 
 const Board = ({
   chess,
@@ -24,7 +26,6 @@ const Board = ({
   const [from, setFrom] = useState<string | null>(null);
   const [to, setTo] = useState<string | null>(null);
   const { gameId, game } = useGameStore();
-  const { user } = useUserStrore();
 
   const handleSquareClick = (
     square: { square: string; color: Color; type: PieceSymbol } | null,
@@ -59,6 +60,7 @@ const Board = ({
         });
         setBoard(chess.board());
         console.log("Move sent:", from, squareId);
+
         setFrom(null);
         setTo(null);
       } catch (error) {
@@ -118,10 +120,17 @@ const Board = ({
 
   return (
     <div className=" flex flex-col items-center justify-center overflow-hidden">
-      <ProfileCard
-        src="https://www.chess.com/bundles/web/images/black_400.png"
-        username={game?.blackPlayer?.username}
-      />
+      <div className=" w-full flex justify-between">
+        <div>
+          <ProfileCard
+            src="https://www.chess.com/bundles/web/images/black_400.png"
+            username={game?.blackPlayer?.username}
+          />
+        </div>
+        <div className=" flex items-center lg:text-lg">
+          <Clock clockId={2} />
+        </div>
+      </div>
       <div className=" hover:cursor-pointer">
         {board.map((row, i) => (
           <div key={i} className="flex">
@@ -157,10 +166,17 @@ const Board = ({
           </div>
         ))}
       </div>
-      <ProfileCard
-        src="https://www.chess.com/bundles/web/images/noavatar_l.84a92436.gif"
-        username={game?.whitePlayer?.username}
-      />
+      <div className=" w-full flex justify-between">
+        <div>
+          <ProfileCard
+            src="https://www.chess.com/bundles/web/images/noavatar_l.84a92436.gif"
+            username={game?.whitePlayer?.username}
+          />
+        </div>
+        <div className=" flex items-center lg:text-lg">
+          <Clock clockId={1} />
+        </div>
+      </div>
     </div>
   );
 };

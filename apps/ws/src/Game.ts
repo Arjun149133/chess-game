@@ -1,5 +1,11 @@
 import { Chess, Move, Square } from "chess.js";
-import { GAME_ENDED, GAME_TIME_MS, INIT_GAME, MOVE } from "./message";
+import {
+  GAME_ENDED,
+  GAME_TIME_MS,
+  INIT_GAME,
+  MOVE,
+  PLAYER_TIME,
+} from "./message";
 import { randomUUID } from "crypto";
 import { MoveType } from "./types";
 import { User } from "./User";
@@ -45,6 +51,10 @@ export class Game {
   private player2TimeConsumed = 0;
   private startTime = new Date(Date.now());
   private lastMoveTime = new Date(Date.now());
+  private player1TimeCount = GAME_TIME_MS;
+  private player2TimeCount = GAME_TIME_MS;
+  private intervalId: NodeJS.Timeout | null = null;
+  private playerTurn: 1 | 2 = 1;
 
   constructor(
     player1UserId: string,
@@ -92,7 +102,7 @@ export class Game {
       }
     });
     this.resetAbandonTimer();
-    this.resetMoveTimer();
+    // this.moveCount%2 === 0 ? this.sendPlayer1TimeCount(): this.sendPlayer2TimeCount TODO: fix this
   }
 
   async updateSecondPlayer(player2UserId: string) {
@@ -137,6 +147,8 @@ export class Game {
         },
       })
     );
+
+    this.sendPlayer1TimeCount();
   }
 
   async createGameInDb() {
@@ -228,6 +240,14 @@ export class Game {
       return;
     }
 
+    if (this.playerTurn === 1) {
+      this.sendPlayer2TimeCount();
+      this.playerTurn = 2;
+    } else {
+      this.sendPlayer1TimeCount();
+      this.playerTurn = 1;
+    }
+
     //flipped coz move already made
     if (this.board.turn() === "b") {
       this.player1TimeConsumed +=
@@ -243,7 +263,6 @@ export class Game {
     await this.addMoveToDb(move, moveTimeStamp);
     console.log("control not reached here");
     this.resetAbandonTimer();
-    this.resetMoveTimer();
 
     this.lastMoveTime = moveTimeStamp;
     let moveMadeBy =
@@ -275,6 +294,64 @@ export class Game {
     this.moveCount++;
   }
 
+  sendPlayer1TimeCount() {
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+    }
+    if (this.player1TimeCount > 0) {
+      this.intervalId = setInterval(() => {
+        this.player1TimeCount = this.player1TimeCount - 1000;
+        socketManager.broadcast(
+          this.gameId,
+          JSON.stringify({
+            type: PLAYER_TIME,
+            payload: {
+              player1TimeCount: this.player1TimeCount,
+              player2TimeCount: this.player2TimeCount,
+            },
+          })
+        );
+        if (this.player1TimeCount <= 0) {
+          this.endGame("TIME_UP", "BLACK_WINS");
+          return;
+        }
+      }, 1000);
+    } else {
+      if (this.intervalId) {
+        clearInterval(this.intervalId);
+      }
+    }
+  }
+
+  sendPlayer2TimeCount() {
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+    }
+    if (this.player1TimeCount > 0) {
+      this.intervalId = setInterval(() => {
+        this.player2TimeCount = this.player2TimeCount - 1000;
+        socketManager.broadcast(
+          this.gameId,
+          JSON.stringify({
+            type: PLAYER_TIME,
+            payload: {
+              player1TimeCount: this.player1TimeCount,
+              player2TimeCount: this.player2TimeCount,
+            },
+          })
+        );
+        if (this.player2TimeCount <= 0) {
+          this.endGame("TIME_UP", "WHITE_WINS");
+          return;
+        }
+      }, 1000);
+    } else {
+      if (this.intervalId) {
+        clearInterval(this.intervalId);
+      }
+    }
+  }
+
   getPlayer1TimeConsumed() {
     if (this.player1TimeConsumed) {
       return (
@@ -299,29 +376,12 @@ export class Game {
     if (this.timer) {
       clearTimeout(this.timer);
     }
-    console.log("this was called");
     this.timer = setTimeout(() => {
-      console.log("this wasn't");
       this.endGame(
         "ABANDONED",
         this.board.turn() === "b" ? "WHITE_WINS" : "BLACK_WINS"
       );
-    }, 10 * 1000); //Change
-  }
-
-  async resetMoveTimer() {
-    if (this.moveTimer) {
-      clearTimeout(this.moveTimer);
-    }
-
-    const turn = this.board.turn();
-    const timeLeft =
-      GAME_TIME_MS -
-      (turn === "w" ? this.player1TimeConsumed : this.player2TimeConsumed);
-
-    this.moveTimer = setTimeout(() => {
-      this.endGame("TIME_UP", turn === "w" ? "BLACK_WINS" : "WHITE_WINS");
-    }, timeLeft);
+    }, 60 * 1000);
   }
 
   exitGame(user: User) {
@@ -372,6 +432,9 @@ export class Game {
 
     this.clearTimer();
     this.clearMoveTimer();
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+    }
   }
 
   setMoveTimer(moveTimer: NodeJS.Timeout) {
