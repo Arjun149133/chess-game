@@ -1,3 +1,4 @@
+import { Game } from "./Game";
 import { User } from "./User";
 
 export class SocketManager {
@@ -31,6 +32,9 @@ export class SocketManager {
   broadcast(roomId: string, message: string) {
     const users = this.interestedSockets.get(roomId);
     if (!users) {
+      if (Game.intervalId) {
+        clearInterval(Game.intervalId);
+      }
       console.log("No users in the room");
       return;
     }

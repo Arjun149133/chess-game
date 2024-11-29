@@ -1,12 +1,10 @@
 "use client";
-import { useGameStore } from "@/store/gameStore";
+import { Game, useGameStore } from "@/store/gameStore";
 import { Chess, Color, PieceSymbol, Square } from "chess.js";
 import Image from "next/image";
-import { Ref, useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { ProfileCard } from "./ProfileCard";
-import { useUserStrore } from "@/store/userStore";
 import Clock from "./Clock";
-import { useClockStore } from "@/store/useClockStore";
 
 const Board = ({
   chess,
@@ -22,6 +20,7 @@ const Board = ({
     color: Color;
   } | null)[][];
   socket: WebSocket;
+  gameRef?: Game | null;
 }) => {
   const [from, setFrom] = useState<string | null>(null);
   const [to, setTo] = useState<string | null>(null);
@@ -128,7 +127,7 @@ const Board = ({
           />
         </div>
         <div className=" flex items-center lg:text-lg">
-          <Clock clockId={2} />
+          <Clock time={game?.timer2} />
         </div>
       </div>
       <div className=" hover:cursor-pointer">
@@ -174,7 +173,7 @@ const Board = ({
           />
         </div>
         <div className=" flex items-center lg:text-lg">
-          <Clock clockId={1} />
+          <Clock time={game?.timer1} />
         </div>
       </div>
     </div>

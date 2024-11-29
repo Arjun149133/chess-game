@@ -53,7 +53,7 @@ export class Game {
   private lastMoveTime = new Date(Date.now());
   private player1TimeCount = GAME_TIME_MS;
   private player2TimeCount = GAME_TIME_MS;
-  private intervalId: NodeJS.Timeout | null = null;
+  static intervalId: NodeJS.Timeout | null = null;
   private playerTurn: 1 | 2 = 1;
 
   constructor(
@@ -148,7 +148,9 @@ export class Game {
       })
     );
 
+    console.log("this was called");
     this.sendPlayer1TimeCount();
+    console.log("we never reached here");
   }
 
   async createGameInDb() {
@@ -295,11 +297,11 @@ export class Game {
   }
 
   sendPlayer1TimeCount() {
-    if (this.intervalId) {
-      clearInterval(this.intervalId);
+    if (Game.intervalId) {
+      clearInterval(Game.intervalId);
     }
     if (this.player1TimeCount > 0) {
-      this.intervalId = setInterval(() => {
+      Game.intervalId = setInterval(() => {
         this.player1TimeCount = this.player1TimeCount - 1000;
         socketManager.broadcast(
           this.gameId,
@@ -317,18 +319,18 @@ export class Game {
         }
       }, 1000);
     } else {
-      if (this.intervalId) {
-        clearInterval(this.intervalId);
+      if (Game.intervalId) {
+        clearInterval(Game.intervalId);
       }
     }
   }
 
   sendPlayer2TimeCount() {
-    if (this.intervalId) {
-      clearInterval(this.intervalId);
+    if (Game.intervalId) {
+      clearInterval(Game.intervalId);
     }
     if (this.player1TimeCount > 0) {
-      this.intervalId = setInterval(() => {
+      Game.intervalId = setInterval(() => {
         this.player2TimeCount = this.player2TimeCount - 1000;
         socketManager.broadcast(
           this.gameId,
@@ -346,8 +348,8 @@ export class Game {
         }
       }, 1000);
     } else {
-      if (this.intervalId) {
-        clearInterval(this.intervalId);
+      if (Game.intervalId) {
+        clearInterval(Game.intervalId);
       }
     }
   }
@@ -432,8 +434,8 @@ export class Game {
 
     this.clearTimer();
     this.clearMoveTimer();
-    if (this.intervalId) {
-      clearInterval(this.intervalId);
+    if (Game.intervalId) {
+      clearInterval(Game.intervalId);
     }
   }
 
