@@ -42,6 +42,7 @@ model Game {
     blackPlayer User @relation("GameAsBlack", fields: [blackPlayerId], references: [id])
 }
 
+//TODO: make move better
 model Move {
     id         String   @id @default(uuid())
     gameId     String
@@ -50,11 +51,11 @@ model Move {
     from       String
     to         String
     comment    String?
-    before     String
-    after      String
+    // before     String
+    // after      String
     timeTaken  Int?     @default(0)
     createdAt  DateTime @default(now())
-    san        String?
+    // san        String?
 
     @@index([gameId])
 }

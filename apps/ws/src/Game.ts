@@ -102,7 +102,6 @@ export class Game {
       }
     });
     this.resetAbandonTimer();
-    // this.moveCount%2 === 0 ? this.sendPlayer1TimeCount(): this.sendPlayer2TimeCount TODO: fix this
   }
 
   async updateSecondPlayer(player2UserId: string) {
@@ -184,6 +183,7 @@ export class Game {
   }
 
   async addMoveToDb(move: Move, moveTimeStamp: Date) {
+    console.log("move ka naame: ", move);
     try {
       await db.$transaction([
         db.move.create({
@@ -192,21 +192,20 @@ export class Game {
             moveNumber: this.moveCount + 1,
             from: move.from,
             to: move.to,
-            before: move.before,
-            after: move.after,
             createdAt: moveTimeStamp,
             timeTaken: moveTimeStamp.getTime() - this.lastMoveTime.getTime(),
-            san: move.san,
           },
         }),
-        db.game.update({
-          data: {
-            currentFen: move.after,
-          },
-          where: {
-            id: this.gameId,
-          },
-        }),
+
+        //TODO: currentFen should be sent from FE
+        // db.game.update({
+        //   data: {
+        //     currentFen: move.after,
+        //   },
+        //   where: {
+        //     id: this.gameId,
+        //   },
+        // }),
       ]);
     } catch (error) {
       console.error("error while adding move to db: ", error);
@@ -216,6 +215,9 @@ export class Game {
   async makeMove(user: User, move: Move) {
     if (this.board.turn() === "w" && user.userId !== this.player1UserId) return;
     if (this.board.turn() === "b" && user.userId !== this.player2UserId) return;
+    console.log("turn: ", this.board.turn());
+    console.log("user1: ", this.player1UserId, " || ", user.userId);
+    console.log("user2: ", this.player2UserId, " || ", user.userId);
 
     if (this.result) {
       console.log("Cannot make move, Game completed.");

@@ -5,6 +5,8 @@ import Image from "next/image";
 import { useState } from "react";
 import { ProfileCard } from "./ProfileCard";
 import Clock from "./Clock";
+import { useUserStrore } from "@/store/userStore";
+import { isPromoting } from "@/utils/isPromoting";
 
 const Board = ({
   chess,
@@ -25,6 +27,7 @@ const Board = ({
   const [from, setFrom] = useState<string | null>(null);
   const [to, setTo] = useState<string | null>(null);
   const { gameId, game } = useGameStore();
+  const { user } = useUserStrore();
 
   const handleSquareClick = (
     square: { square: string; color: Color; type: PieceSymbol } | null,
@@ -41,22 +44,51 @@ const Board = ({
       console.log("Second click: to square set to", squareId);
 
       try {
-        socket.send(
-          JSON.stringify({
-            type: "move",
-            payload: {
-              gameId: gameId,
-              move: {
-                from,
-                to: squareId,
+        if (
+          (chess.turn() === "w" && user?.id !== game?.whitePlayer?.id) ||
+          (chess.turn() === "b" && user?.id !== game?.blackPlayer?.id)
+        ) {
+          throw Error("you cannot make other players move");
+        }
+
+        if (isPromoting(chess, from as Square, squareId as Square)) {
+          socket.send(
+            JSON.stringify({
+              type: "move",
+              payload: {
+                gameId: gameId,
+                move: {
+                  from,
+                  to: squareId,
+                  promotion: "q",
+                },
               },
-            },
-          })
-        );
-        chess.move({
-          from,
-          to: squareId,
-        });
+            })
+          );
+          chess.move({
+            from,
+            to: squareId,
+            promotion: "q",
+          });
+        } else {
+          socket.send(
+            JSON.stringify({
+              type: "move",
+              payload: {
+                gameId: gameId,
+                move: {
+                  from,
+                  to: squareId,
+                },
+              },
+            })
+          );
+          chess.move({
+            from,
+            to: squareId,
+          });
+        }
+
         setBoard(chess.board());
         console.log("Move sent:", from, squareId);
 
