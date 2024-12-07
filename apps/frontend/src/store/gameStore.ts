@@ -1,5 +1,6 @@
 import { GAME_RESULT, GAME_STATUS } from "@/utils/utils";
 import { Move } from "chess.js";
+import { useRef } from "react";
 import { create } from "zustand";
 
 export interface Player {
@@ -28,6 +29,8 @@ export interface Payload {
   setGameId: (gameId: string) => void;
   setGame: (game: Game) => void;
 }
+
+// export const gameRef = useRef<Game | null>(null);
 
 export const useGameStore = create<Payload>((set) => ({
   gameId: null,

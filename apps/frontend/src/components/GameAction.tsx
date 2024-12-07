@@ -17,7 +17,7 @@ const GAME_ADDED = "game_added";
 const EXIT_GAME = "exit_game";
 const PLAYER_TIME = "player_time";
 
-const GamePage = () => {
+const GameAction = () => {
   const socket = useSocketStore((state) => state.socket);
   const setSocket = useSocketStore((state) => state.setSocket);
   const [chess, setChess] = useState(new Chess());
@@ -27,9 +27,8 @@ const GamePage = () => {
   const { gameId, game } = useGameStore();
   const setGameId = useGameStore((state) => state.setGameId);
   const setGame = useGameStore((state) => state.setGame);
-  const router = useRouter();
   const params = useParams();
-  const gameRef = useRef<GameType | null>(null);
+  const gameRef = useRef<GameType | null>(game);
 
   useEffect(() => {
     fetchUser();
@@ -57,33 +56,6 @@ const GamePage = () => {
       const message = JSON.parse(event.data);
       const payload = message.payload;
       switch (message.type) {
-        case GAME_ADDED:
-          setGameId(payload.gameId);
-          console.log("payloadid: ", message.payload.gameId);
-          console.log("game_added ", message);
-          break;
-        case INIT_GAME:
-          setGameId(payload.gameId);
-          const newGame: GameType = {
-            moveCount: 0,
-            whitePlayer: {
-              username: payload.whitePlayer.username,
-              id: payload.whitePlayer.id,
-              isGuest: payload.whitePlayer.isGuest,
-            },
-            blackPlayer: {
-              username: payload.blackPlayer.username,
-              id: payload.blackPlayer.id,
-              isGuest: payload.blackPlayer.isGuest,
-            },
-            fen: payload.fen,
-            moves: [],
-          };
-          handleGameStateSet(newGame);
-          setBoard(chess.board());
-          router.push(`/play/online/game/${message.payload.gameId}`);
-          console.log("Game Initialized: ", message);
-          break;
         case MOVE:
           if (!gameRef.current) return;
           console.log(message);
@@ -138,7 +110,7 @@ const GamePage = () => {
   }, [socket, chess, board]);
 
   if (!socket) {
-    return <LoginDialog />;
+    return <div>connecting...</div>;
   }
 
   if (isGameOver) {
@@ -192,4 +164,4 @@ const GamePage = () => {
   );
 };
 
-export default GamePage;
+export default GameAction;

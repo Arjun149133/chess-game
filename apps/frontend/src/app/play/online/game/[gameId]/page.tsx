@@ -1,8 +1,8 @@
-import GamePage from "@/screens/GamePage";
+import GameAction from "@/components/GameAction";
 import React from "react";
 
 const page = () => {
-  return <GamePage />;
+  return <GameAction />;
 };
 
 export default page;
