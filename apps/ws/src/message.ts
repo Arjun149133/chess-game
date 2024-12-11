@@ -6,6 +6,7 @@ export const GAME_ALERT = "game_alert";
 export const GAME_ENDED = "game_ended";
 export const EXIT_GAME = "exit_game";
 export const PLAYER_TIME = "player_time";
+export const IN_PROGRESS = "in_progress";
 
 export const JOIN_ROOM = "join_room";
 export const GAME_NOT_FOUND = "game_not_found";

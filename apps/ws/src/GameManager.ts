@@ -153,7 +153,7 @@ export class GameManager {
           return;
         }
 
-        if (gameFromDb.status === "IN_PROGRESS") {
+        if (gameFromDb.status != "IN_PROGRESS") {
           user.socket.send(
             JSON.stringify({
               type: GAME_ENDED,
@@ -196,11 +196,11 @@ export class GameManager {
               moves: gameFromDb.moves,
               blackPlayer: {
                 id: gameFromDb.blackPlayer.id,
-                name: gameFromDb.blackPlayer.username,
+                username: gameFromDb.blackPlayer.username,
               },
               whitePlayer: {
                 id: gameFromDb.whitePlayer.id,
-                name: gameFromDb.whitePlayer.username,
+                username: gameFromDb.whitePlayer.username,
               },
               player1TimeConsumed: availableGame.getPlayer1TimeConsumed(),
               player2TimeConsumed: availableGame.getPlayer2TimeConsumed(),

@@ -15,7 +15,7 @@ export const useSocket = () => {
 
     ws.onopen = () => {
       setSocket(ws);
-      console.log("socket opened");
+      console.log("socket opened", ws);
     };
 
     ws.onclose = () => {

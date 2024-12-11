@@ -3,6 +3,7 @@ import Card from "@/components/Card";
 import Game from "@/components/Game";
 import GameOverDialog from "@/components/GameOverDailog";
 import LoginDialog from "@/components/LoginDialog";
+import { useSocket } from "@/hooks/useSocket";
 import { Game as GameType, useGameStore } from "@/store/gameStore";
 import { useUserStrore } from "@/store/userStore";
 import { useSocketStore } from "@/store/useSocketStore";
@@ -16,10 +17,11 @@ const GAME_ENDED = "game_ended";
 const GAME_ADDED = "game_added";
 const EXIT_GAME = "exit_game";
 const PLAYER_TIME = "player_time";
+const JOIN_ROOM = "join_room";
+const GAME_JOINED = "game_joined";
 
 const GameAction = () => {
-  const socket = useSocketStore((state) => state.socket);
-  const setSocket = useSocketStore((state) => state.setSocket);
+  const socket = useSocket();
   const [chess, setChess] = useState(new Chess());
   const [board, setBoard] = useState(chess.board());
   const [isGameOver, setIsGameOver] = useState(false);
@@ -35,7 +37,14 @@ const GameAction = () => {
     if (params.gameId) {
       //@ts-ignore
       setGameId(params.gameId);
-      console.log(params.gameId);
+      // socket?.send(
+      //   JSON.stringify({
+      //     type: JOIN_ROOM,
+      //     payload: {
+      //       gameId: gameId,
+      //     },
+      //   })
+      // );
     }
   }, [fetchUser]);
 
@@ -100,13 +109,20 @@ const GameAction = () => {
           console.log(isGameOver);
           console.log("yup game ended", payload);
           break;
+        case GAME_JOINED:
+          gameRef.current = {
+            moveCount: payload.moves.length,
+            moves: payload.moves,
+            whitePlayer: payload.whitePlayer,
+            blackPlayer: payload.blackPlayer,
+            timer1: 60 * 1000 - payload.player1TimeConsumed,
+            timer2: 60 * 1000 - payload.player2TimeConsumed,
+          };
+          setGame(gameRef.current);
+          console.log(game);
+          break;
       }
     };
-
-    // return () => {
-    //   setSocket(null);
-    //   socket.close();
-    // };
   }, [socket, chess, board]);
 
   if (!socket) {

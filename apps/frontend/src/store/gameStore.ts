@@ -6,7 +6,7 @@ import { create } from "zustand";
 export interface Player {
   username: string;
   id: string;
-  isGuest: boolean;
+  isGuest?: boolean;
 }
 
 export interface Game {
