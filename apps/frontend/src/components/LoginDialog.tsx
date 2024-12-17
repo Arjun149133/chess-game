@@ -20,7 +20,6 @@ const LoginDialog = () => {
           withCredentials: true,
         }
       );
-      console.log(res.data);
       setToken(res.data.token);
       setUser({
         ...res.data.user,

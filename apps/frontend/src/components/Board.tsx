@@ -38,10 +38,8 @@ const Board = ({
 
     if (from === null) {
       setFrom(squareId);
-      console.log("First click: from square set to", squareId);
     } else {
       setTo(squareId);
-      console.log("Second click: to square set to", squareId);
 
       try {
         if (
@@ -87,11 +85,9 @@ const Board = ({
             from,
             to: squareId,
           });
-          console.log("chess fen: ", chess.fen());
         }
 
         setBoard(chess.board());
-        console.log("Move sent:", from, squareId);
 
         setFrom(null);
         setTo(null);

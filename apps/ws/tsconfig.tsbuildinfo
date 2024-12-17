@@ -1,1 +1,1 @@
-{"root":["./src/Game.ts","./src/GameManager.ts","./src/SocketManager.ts","./src/User.ts","./src/index.ts","./src/message.ts","./src/types.ts","./src/auth/index.ts","./src/db/index.ts"],"version":"5.6.3"}
+{"root":["./src/Game.ts","./src/GameManager.ts","./src/SocketManager.ts","./src/User.ts","./src/index.ts","./src/message.ts","./src/types.ts","./src/utils.ts","./src/auth/index.ts","./src/db/index.ts"],"version":"5.6.3"}

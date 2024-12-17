@@ -1,16 +1,11 @@
 import { Chess, Move, Square } from "chess.js";
-import {
-  GAME_ENDED,
-  GAME_TIME_MS,
-  INIT_GAME,
-  MOVE,
-  PLAYER_TIME,
-} from "./message";
+import { GAME_ENDED, GAME_TYPE, INIT_GAME, MOVE, PLAYER_TIME } from "./message";
 import { randomUUID } from "crypto";
 import { MoveType } from "./types";
 import { User } from "./User";
 import { socketManager } from "./SocketManager";
 import { db } from "./db";
+import { returnsTime } from "./utils";
 
 type GAME_RESULT = "WHITE_WINS" | "BLACK_WINS" | "DRAW";
 type GAME_STATUS =
@@ -51,14 +46,16 @@ export class Game {
   private player2TimeConsumed = 0;
   private startTime = new Date(Date.now());
   private lastMoveTime = new Date(Date.now());
-  private player1TimeCount = GAME_TIME_MS;
-  private player2TimeCount = GAME_TIME_MS;
+  private player1TimeCount;
+  private player2TimeCount;
+  private game_type;
   static intervalId: NodeJS.Timeout | null = null;
   private playerTurn: 1 | 2 = 1;
 
   constructor(
     player1UserId: string,
     player2UserId: string | null,
+    game_type: GAME_TYPE,
     gameId?: string,
     startTime?: Date
   ) {
@@ -66,6 +63,12 @@ export class Game {
     this.player1UserId = player1UserId;
     this.player2UserId = player2UserId;
     this.board = new Chess();
+    this.game_type = game_type;
+    console.log("game_type in constructor: ", game_type);
+    this.player1TimeCount = returnsTime(game_type);
+    console.log("player1TimeCount: ", this.player1TimeCount);
+    this.player2TimeCount = returnsTime(game_type);
+    console.log("player2TimeCount: ", this.player2TimeCount);
     if (startTime) {
       this.startTime = startTime;
       this.lastMoveTime = startTime; // seems wrong
@@ -146,20 +149,21 @@ export class Game {
         },
       })
     );
-
-    console.log("this was called");
     this.sendPlayer1TimeCount();
-    console.log("we never reached here");
   }
 
   async createGameInDb() {
     this.startTime = new Date(Date.now());
     this.lastMoveTime = this.startTime;
-
+    console.log("game_type in createGameInDb: ", this.game_type);
     const game = await db.game.create({
       data: {
         id: this.gameId,
-        timeControl: "CLASSICAL",
+        timeControl: this.game_type as unknown as
+          | "CLASSICAL"
+          | "BLITZ"
+          | "RAPID"
+          | "BULLET",
         status: "IN_PROGRESS",
         startAt: this.startTime,
         currentFen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
@@ -183,7 +187,6 @@ export class Game {
   }
 
   async addMoveToDb(move: Move, moveTimeStamp: Date) {
-    console.log("move ka naame: ", move);
     try {
       await db.$transaction([
         db.move.create({
@@ -219,7 +222,6 @@ export class Game {
     console.log("user2: ", this.player2UserId, " || ", user.userId);
 
     if (this.result) {
-      console.log("Cannot make move, Game completed.");
       return;
     }
 
@@ -261,10 +263,7 @@ export class Game {
         moveTimeStamp.getTime() - this.lastMoveTime.getTime();
     }
 
-    console.log("controle here");
-
     await this.addMoveToDb(move, moveTimeStamp);
-    console.log("control not reached here");
     this.resetAbandonTimer();
 
     this.lastMoveTime = moveTimeStamp;
@@ -294,7 +293,6 @@ export class Game {
 
       this.endGame("COMPLETED", res);
     }
-    console.log("move made");
     this.moveCount++;
   }
 

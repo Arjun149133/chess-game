@@ -15,6 +15,12 @@ const GAME_ENDED = "game_ended";
 const GAME_ADDED = "game_added";
 const EXIT_GAME = "exit_game";
 const PLAYER_TIME = "player_time";
+export enum GAME_TYPE {
+  CLASSICAL,
+  BLITZ,
+  RAPID,
+  BULLET,
+}
 
 const GamePage = () => {
   const socket = useSocketStore((state) => state.socket);
@@ -69,11 +75,6 @@ const GamePage = () => {
           break;
       }
     };
-
-    // return () => {
-    //   setSocket(null);
-    //   socket.close();
-    // };
   }, [socket, chess, board]);
 
   if (!socket) {
@@ -111,6 +112,9 @@ const GamePage = () => {
             socket.send(
               JSON.stringify({
                 type: INIT_GAME,
+                payload: {
+                  game_type: "RAPID",
+                },
               })
             );
           }}

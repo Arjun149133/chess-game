@@ -26,7 +26,6 @@ export class SocketManager {
       user,
     ]);
     this.userRoomMapping.set(user.userId, roomId);
-    console.log("userRoomMapping: ", this.userRoomMapping);
   }
 
   broadcast(roomId: string, message: string) {
@@ -35,7 +34,6 @@ export class SocketManager {
       if (Game.intervalId) {
         clearInterval(Game.intervalId);
       }
-      console.log("No users in the room");
       return;
     }
     users.forEach((user) => {
@@ -44,8 +42,6 @@ export class SocketManager {
   }
 
   removeUser(user: User) {
-    console.log("why here?");
-    console.log("2time: ", this.userRoomMapping);
     const roomId = this.userRoomMapping.get(user.userId);
     if (!roomId) {
       console.log("User was not interested in any room");
@@ -53,7 +49,6 @@ export class SocketManager {
     }
     const room = this.interestedSockets.get(roomId) || [];
     const remainingUsers = room.filter((u) => u.userId !== user.userId);
-    console.log("deleting this user: ", user.userId);
 
     this.interestedSockets.set(roomId, remainingUsers);
 

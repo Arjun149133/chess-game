@@ -33,12 +33,9 @@ const GameAction = () => {
   const gameRef = useRef<GameType | null>(game);
 
   useEffect(() => {
-    console.log("its happening");
     //@ts-ignore
     setGameId(params.gameId);
-    console.log("gameID: ", gameId);
     if (game === null) {
-      console.log("should not appear", socket);
       socket?.send(
         JSON.stringify({
           type: JOIN_ROOM,
@@ -57,7 +54,6 @@ const GameAction = () => {
 
   const gameOverFunction = () => {
     setIsGameOver(true);
-    console.log("function was called");
   };
 
   useEffect(() => {
@@ -71,12 +67,9 @@ const GameAction = () => {
           if (!gameRef.current) return;
           console.log(message);
           const move = message.payload.move as Move;
-          console.log(move);
           if (message.payload.moveMadeBy !== user?.id) {
             chess.move(move);
-            console.log("Move made" + move);
             setBoard(chess.board());
-            console.log("Move made1" + move);
           }
           gameRef.current = {
             ...gameRef.current,
@@ -116,10 +109,8 @@ const GameAction = () => {
             timer1: 60 * 1000 - payload.player1TimeConsumed,
             timer2: 60 * 1000 - payload.player2TimeConsumed,
           };
-          console.log("gameref.current: ", gameRef.current);
           setGame(gameRef.current);
           gameOverFunction();
-          console.log(isGameOver);
           console.log("yup game ended", payload);
           break;
         case GAME_JOINED:

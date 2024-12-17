@@ -25,7 +25,6 @@ const Card = ({
   useEffect(() => {
     if (messageEndRef.current) {
       messageEndRef.current.scrollIntoView({ behavior: "smooth" });
-      console.log("height: ", messageEndRef.current.scrollHeight);
     }
   }, [moves]);
 

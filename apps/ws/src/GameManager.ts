@@ -6,6 +6,7 @@ import {
   GAME_ENDED,
   GAME_JOINED,
   GAME_NOT_FOUND,
+  GAME_TYPE,
   INIT_GAME,
   JOIN_ROOM,
   MOVE,
@@ -18,24 +19,22 @@ import { db } from "./db";
 export class GameManager {
   private games: Game[];
   private users: User[];
-  private pendingGameId: string | null;
+  private pendingGameId: Map<GAME_TYPE, string | null>;
 
   constructor() {
     this.games = [];
     this.users = [];
-    this.pendingGameId = null;
+    this.pendingGameId = new Map<GAME_TYPE, string | null>();
   }
 
   addUser(user: User) {
     this.users.push(user);
-    this.users.map((u) => console.log("userr: ", u.userId));
     this.addHandler(user);
   }
 
   removeUser(socket: WebSocket) {
     const user = this.users.find((u) => u.socket === socket);
     if (!user) {
-      console.log("No user found");
       return;
     }
     this.users = this.users.filter((u) => u.socket !== user.socket);
@@ -47,13 +46,17 @@ export class GameManager {
   }
 
   private addHandler(user: User) {
-    console.log("we are comming here");
     user.socket.on("message", async (data) => {
       const message = JSON.parse(data.toString());
       console.log("message: ", message);
       if (message.type === INIT_GAME) {
-        if (this.pendingGameId) {
-          const game = this.games.find((x) => x.gameId === this.pendingGameId);
+        console.log("player2 game type: ", message.payload.game_type);
+        if (this.pendingGameId.get(message.payload.game_type)) {
+          console.log("pending game found");
+          const game = this.games.find(
+            (x) =>
+              x.gameId === this.pendingGameId.get(message.payload.game_type)
+          );
           if (!game) {
             console.error("Pending game not found?");
             return;
@@ -70,17 +73,19 @@ export class GameManager {
             );
             return;
           }
-          console.log("second player");
           socketManager.addUser(user, game.gameId);
           await game.updateSecondPlayer(user.userId);
-          this.pendingGameId = null;
+          this.pendingGameId.set(message.payload.game_type, null);
         } else {
-          console.log("we are not comming here");
-          const game = new Game(user.userId, null);
+          console.log("player1 game type: ", message.payload.game_type);
+          const game = new Game(
+            user.userId,
+            null,
+            message.payload.game_type as GAME_TYPE
+          );
           this.games.push(game);
-          this.pendingGameId = game.gameId;
+          this.pendingGameId.set(message.payload.game_type, game.gameId);
           socketManager.addUser(user, game.gameId);
-          console.log("first player");
           socketManager.broadcast(
             game.gameId,
             JSON.stringify({
@@ -180,6 +185,7 @@ export class GameManager {
           const game = new Game(
             gameFromDb.whitePlayerId,
             gameFromDb.blackPlayerId,
+            gameFromDb.timeControl as unknown as GAME_TYPE,
             gameFromDb.id,
             gameFromDb.startAt
           );
