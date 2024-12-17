@@ -141,7 +141,7 @@ export class Game {
             id: this.player2UserId,
             isGuest: blackPlayer?.provider === "Guest",
           },
-          fen: this.board.fen(),
+          currenFen: this.board.fen(),
           moves: [],
         },
       })
@@ -197,15 +197,14 @@ export class Game {
           },
         }),
 
-        //TODO: currentFen should be sent from FE
-        // db.game.update({
-        //   data: {
-        //     currentFen: move.after,
-        //   },
-        //   where: {
-        //     id: this.gameId,
-        //   },
-        // }),
+        db.game.update({
+          data: {
+            currentFen: this.board.fen(),
+          },
+          where: {
+            id: this.gameId,
+          },
+        }),
       ]);
     } catch (error) {
       console.error("error while adding move to db: ", error);
@@ -281,6 +280,7 @@ export class Game {
           moveMadeBy,
           player1TimeConsumed: this.player1TimeConsumed,
           player2TimeConsumed: this.player2TimeConsumed,
+          currentFen: this.board.fen(),
         },
       })
     );
@@ -430,6 +430,7 @@ export class Game {
             id: updatedGame.whitePlayerId,
             username: updatedGame.whitePlayer.username,
           },
+          currentFen: updatedGame.currentFen,
         },
       })
     );

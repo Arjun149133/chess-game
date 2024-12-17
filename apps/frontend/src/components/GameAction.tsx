@@ -33,20 +33,22 @@ const GameAction = () => {
   const gameRef = useRef<GameType | null>(game);
 
   useEffect(() => {
-    fetchUser();
-    if (params.gameId) {
-      //@ts-ignore
-      setGameId(params.gameId);
-      // socket?.send(
-      //   JSON.stringify({
-      //     type: JOIN_ROOM,
-      //     payload: {
-      //       gameId: gameId,
-      //     },
-      //   })
-      // );
+    console.log("its happening");
+    //@ts-ignore
+    setGameId(params.gameId);
+    console.log("gameID: ", gameId);
+    if (game === null) {
+      console.log("should not appear", socket);
+      socket?.send(
+        JSON.stringify({
+          type: JOIN_ROOM,
+          payload: {
+            gameId: gameId,
+          },
+        })
+      );
     }
-  }, [fetchUser]);
+  }, [socket]);
 
   const handleGameStateSet = (game: GameType) => {
     setGame(game);
@@ -99,12 +101,23 @@ const GameAction = () => {
           break;
         case GAME_ENDED:
           console.log("game ended", payload);
-          if (!gameRef.current) return;
+          if (!gameRef.current) {
+            gameRef.current = {
+              moveCount: payload.moves.length,
+            };
+          }
           gameRef.current = {
             ...gameRef.current,
             result: payload.result,
             status: payload.status,
+            moves: payload.moves,
+            whitePlayer: payload.whitePlayer,
+            blackPlayer: payload.blackPlayer,
+            timer1: 60 * 1000 - payload.player1TimeConsumed,
+            timer2: 60 * 1000 - payload.player2TimeConsumed,
           };
+          console.log("gameref.current: ", gameRef.current);
+          setGame(gameRef.current);
           gameOverFunction();
           console.log(isGameOver);
           console.log("yup game ended", payload);
@@ -118,8 +131,12 @@ const GameAction = () => {
             timer1: 60 * 1000 - payload.player1TimeConsumed,
             timer2: 60 * 1000 - payload.player2TimeConsumed,
           };
+          console.log("game payload: ", payload);
+          chess.load(payload.currentFen);
+          setBoard(chess.board());
           setGame(gameRef.current);
-          console.log(game);
+          console.log("gamejoined: ");
+          console.log("game: ", game);
           break;
       }
     };

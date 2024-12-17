@@ -87,6 +87,7 @@ const Board = ({
             from,
             to: squareId,
           });
+          console.log("chess fen: ", chess.fen());
         }
 
         setBoard(chess.board());
