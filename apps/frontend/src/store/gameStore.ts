@@ -1,6 +1,5 @@
 import { GAME_RESULT, GAME_STATUS } from "@/utils/utils";
 import { Move } from "chess.js";
-import { useRef } from "react";
 import { create } from "zustand";
 
 export interface Player {
@@ -10,7 +9,8 @@ export interface Player {
 }
 
 export interface Game {
-  moveCount: number;
+  moveCount?: number;
+  game_type: string;
   whitePlayer?: Player;
   blackPlayer?: Player;
   player1TimeConsumed?: number;

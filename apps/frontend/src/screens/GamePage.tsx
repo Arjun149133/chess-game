@@ -55,6 +55,7 @@ const GamePage = () => {
           setGameId(payload.gameId);
           const newGame: GameType = {
             moveCount: 0,
+            game_type: payload.game_type,
             whitePlayer: {
               username: payload.whitePlayer.username,
               id: payload.whitePlayer.id,
@@ -109,11 +110,12 @@ const GamePage = () => {
           card1={false}
           gameId={gameId}
           onPlayButtonClick={() => {
+            console.log("clicked play: ", game?.game_type);
             socket.send(
               JSON.stringify({
                 type: INIT_GAME,
                 payload: {
-                  game_type: "RAPID",
+                  game_type: game?.game_type,
                 },
               })
             );

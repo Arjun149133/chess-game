@@ -146,6 +146,7 @@ export class Game {
           },
           currenFen: this.board.fen(),
           moves: [],
+          game_type: this.game_type,
         },
       })
     );
@@ -429,6 +430,7 @@ export class Game {
             username: updatedGame.whitePlayer.username,
           },
           currentFen: updatedGame.currentFen,
+          game_type: updatedGame.timeControl,
         },
       })
     );

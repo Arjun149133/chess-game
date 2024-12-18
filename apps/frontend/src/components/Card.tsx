@@ -1,11 +1,11 @@
 "use client";
 import Image from "next/image";
 import { Button } from "./ui/button";
-import DropDownButton from "./DropDownButton";
 import Link from "next/link";
 import { useEffect, useRef } from "react";
 import { Move } from "chess.js";
 import CustomButton from "./Button";
+import SelectMatch from "./SelectMatch";
 
 const Card = ({
   card1,
@@ -13,12 +13,14 @@ const Card = ({
   moves,
   onPlayButtonClick,
   onResignButtonClick,
+  onDrawButtonClick,
 }: {
   card1: boolean;
   gameId?: string | null;
   moves?: Move[];
   onPlayButtonClick?: () => void;
   onResignButtonClick?: () => void;
+  onDrawButtonClick?: () => void;
 }) => {
   const messageEndRef = useRef<HTMLDivElement>(null);
 
@@ -80,15 +82,16 @@ const Card = ({
                   <div ref={messageEndRef} />
                 </div>
               </div>
-              <div className=" flex w-48">
+              <div className=" flex w-48 space-x-2">
                 <CustomButton onClick={onResignButtonClick}>
                   Resign
                 </CustomButton>
+                <CustomButton onClick={onDrawButtonClick}>Draw</CustomButton>
               </div>
             </div>
           ) : (
             <div className=" flex flex-col space-y-4">
-              <DropDownButton />
+              <SelectMatch />
               <Button
                 onClick={onPlayButtonClick}
                 className=" w-72 h-16 md:text-xl bg-green-800 hover:bg-green-700 font-bold shadow-lg border-green-950 "

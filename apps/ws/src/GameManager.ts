@@ -175,6 +175,7 @@ export class GameManager {
                   username: gameFromDb.whitePlayer.username,
                 },
                 currentFen: gameFromDb.currentFen,
+                game_type: gameFromDb.timeControl,
               },
             })
           );
@@ -212,6 +213,7 @@ export class GameManager {
               player1TimeConsumed: availableGame.getPlayer1TimeConsumed(),
               player2TimeConsumed: availableGame.getPlayer2TimeConsumed(),
               currentFen: gameFromDb.currentFen,
+              game_type: gameFromDb.timeControl,
             },
           })
         );
