@@ -1,8 +1,6 @@
 import { GAME_TYPE } from "./message";
 
 export function returnsTime(game_type: GAME_TYPE): number {
-  console.log("game_type in switch: ", game_type);
-
   switch (game_type) {
     case "CLASSICAL":
       return 10 * 60 * 1000;

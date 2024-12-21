@@ -9,7 +9,7 @@ export interface Player {
 }
 
 export interface Game {
-  moveCount?: number;
+  moveCount: number;
   game_type: string;
   whitePlayer?: Player;
   blackPlayer?: Player;
@@ -29,8 +29,6 @@ export interface Payload {
   setGameId: (gameId: string) => void;
   setGame: (game: Game) => void;
 }
-
-// export const gameRef = useRef<Game | null>(null);
 
 export const useGameStore = create<Payload>((set) => ({
   gameId: null,

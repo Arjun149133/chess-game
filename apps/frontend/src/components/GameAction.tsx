@@ -2,14 +2,13 @@
 import Card from "@/components/Card";
 import Game from "@/components/Game";
 import GameOverDialog from "@/components/GameOverDailog";
-import LoginDialog from "@/components/LoginDialog";
 import { useSocket } from "@/hooks/useSocket";
 import { Game as GameType, useGameStore } from "@/store/gameStore";
 import { useUserStrore } from "@/store/userStore";
-import { useSocketStore } from "@/store/useSocketStore";
+import { returnsTime } from "@/utils/utils";
 import { Chess, Move } from "chess.js";
-import { useParams, useRouter } from "next/navigation";
-import { Suspense, useEffect, useReducer, useRef, useState } from "react";
+import { useParams } from "next/navigation";
+import { Suspense, useEffect, useRef, useState } from "react";
 
 export const INIT_GAME = "init_game";
 const MOVE = "move";
@@ -97,8 +96,11 @@ const GameAction = () => {
           if (!gameRef.current) {
             gameRef.current = {
               moveCount: payload.moves.length,
+              game_type: payload.game_type,
             };
           }
+          let time = returnsTime(payload.game_type);
+          console.log("for now: ", time);
           gameRef.current = {
             ...gameRef.current,
             result: payload.result,
@@ -106,21 +108,24 @@ const GameAction = () => {
             moves: payload.moves,
             whitePlayer: payload.whitePlayer,
             blackPlayer: payload.blackPlayer,
-            timer1: 60 * 1000 - payload.player1TimeConsumed,
-            timer2: 60 * 1000 - payload.player2TimeConsumed,
+            timer1: time - payload.player1TimeConsumed,
+            timer2: time - payload.player2TimeConsumed,
           };
           setGame(gameRef.current);
+          chess.load(payload.currentFen);
+          setBoard(chess.board());
           gameOverFunction();
           console.log("yup game ended", payload);
           break;
         case GAME_JOINED:
           gameRef.current = {
+            game_type: payload.game_type,
             moveCount: payload.moves.length,
             moves: payload.moves,
             whitePlayer: payload.whitePlayer,
             blackPlayer: payload.blackPlayer,
-            timer1: 60 * 1000 - payload.player1TimeConsumed,
-            timer2: 60 * 1000 - payload.player2TimeConsumed,
+            // timer1: 60 * 1000 - payload.player1TimeConsumed,
+            // timer2: 60 * 1000 - payload.player2TimeConsumed,
           };
           console.log("game payload: ", payload);
           chess.load(payload.currentFen);

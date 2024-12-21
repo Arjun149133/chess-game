@@ -399,6 +399,8 @@ export class Game {
       data: {
         status,
         result,
+        player1TimeConsumed: this.player1TimeConsumed,
+        player2TimeConsumed: this.player2TimeConsumed,
       },
       where: {
         id: this.gameId,
@@ -431,6 +433,8 @@ export class Game {
           },
           currentFen: updatedGame.currentFen,
           game_type: updatedGame.timeControl,
+          player1TimeConsumed: updatedGame.player1TimeConsumed,
+          player2TimeConsumed: updatedGame.player2TimeConsumed,
         },
       })
     );

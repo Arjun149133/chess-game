@@ -26,17 +26,19 @@ model User {
 }
 
 model Game {
-    id            String      @id @default(uuid())
-    whitePlayerId String
-    blackPlayerId String
-    status        GameStatus
-    result        GameResult?
-    timeControl   TimeControl
-    startingFen   String      @default("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
-    currentFen    String?
-    startAt       DateTime    @default(now())
-    endAt         DateTime?
-    moves         Move[]
+    id                  String      @id @default(uuid())
+    whitePlayerId       String
+    blackPlayerId       String
+    status              GameStatus
+    result              GameResult?
+    timeControl         TimeControl
+    startingFen         String      @default("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
+    currentFen          String?
+    startAt             DateTime    @default(now())
+    endAt               DateTime?
+    moves               Move[]
+    player1TimeConsumed Int         @default(0)
+    player2TimeConsumed Int         @default(0)
 
     whitePlayer User @relation("GameAsWhite", fields: [whitePlayerId], references: [id])
     blackPlayer User @relation("GameAsBlack", fields: [blackPlayerId], references: [id])
