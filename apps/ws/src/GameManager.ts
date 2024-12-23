@@ -1,5 +1,8 @@
 import { WebSocket } from "ws";
 import {
+  DRAW_ACCEPT,
+  DRAW_OFFER,
+  DRAW_REJECT,
   EXIT_GAME,
   GAME_ADDED,
   GAME_ALERT,
@@ -109,6 +112,37 @@ export class GameManager {
         if (game.result) {
           this.removeGame(game.gameId);
         }
+      }
+
+      if (message.type === DRAW_OFFER) {
+        const gameId = message.payload.gameId;
+        const game = this.games.find((x) => x.gameId === gameId);
+        if (!game) {
+          console.error("There was no game found to make a move"); //TODO: error handling
+          return;
+        }
+        game.drawOffer(user);
+      }
+
+      if (message.type === DRAW_ACCEPT) {
+        const gameId = message.payload.gameId;
+        const game = this.games.find((x) => x.gameId === gameId);
+        if (!game) {
+          console.error("There was no game found to make a move"); //TODO: error handling
+          return;
+        }
+        game.drawAccept();
+        this.removeGame(game.gameId);
+      }
+
+      if (message.type === DRAW_REJECT) {
+        const gameId = message.payload.gameId;
+        const game = this.games.find((x) => x.gameId === gameId);
+        if (!game) {
+          console.error("There was no game found to make a move"); //TODO: error handling
+          return;
+        }
+        game.drawReject();
       }
 
       if (message.type === EXIT_GAME) {

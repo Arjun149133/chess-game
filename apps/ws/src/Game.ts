@@ -1,5 +1,13 @@
 import { Chess, Move, Square } from "chess.js";
-import { GAME_ENDED, GAME_TYPE, INIT_GAME, MOVE, PLAYER_TIME } from "./message";
+import {
+  DRAW_OFFER,
+  DRAW_REJECT,
+  GAME_ENDED,
+  GAME_TYPE,
+  INIT_GAME,
+  MOVE,
+  PLAYER_TIME,
+} from "./message";
 import { randomUUID } from "crypto";
 import { MoveType } from "./types";
 import { User } from "./User";
@@ -391,6 +399,32 @@ export class Game {
     this.endGame(
       "PLAYER_EXIT",
       user.userId === this.player1UserId ? "BLACK_WINS" : "WHITE_WINS"
+    );
+  }
+
+  drawOffer(user: User) {
+    console.log("reaching here!");
+    socketManager.broadcast(
+      this.gameId,
+      JSON.stringify({
+        type: DRAW_OFFER,
+        payload: {
+          senderId: user.userId,
+        },
+      })
+    );
+  }
+
+  drawAccept() {
+    this.endGame("COMPLETED", "DRAW");
+  }
+
+  drawReject() {
+    socketManager.broadcast(
+      this.gameId,
+      JSON.stringify({
+        type: DRAW_REJECT,
+      })
     );
   }
 

@@ -18,6 +18,9 @@ const EXIT_GAME = "exit_game";
 const PLAYER_TIME = "player_time";
 const JOIN_ROOM = "join_room";
 const GAME_JOINED = "game_joined";
+const DRAW_OFFER = "draw_offer";
+const DRAW_ACCEPT = "draw_accept";
+const DRAW_REJECT = "draw_reject";
 
 const GameAction = () => {
   const socket = useSocket();
@@ -82,7 +85,6 @@ const GameAction = () => {
 
           break;
         case PLAYER_TIME:
-          console.log("lanj: ", payload);
           if (!gameRef.current) return;
           gameRef.current = {
             ...gameRef.current,
@@ -90,6 +92,38 @@ const GameAction = () => {
             timer2: payload.player2TimeCount,
           };
           setGame(gameRef.current);
+          break;
+        case DRAW_OFFER:
+          if (payload.senderId === user?.id) {
+            console.log("hey i sent the draw req");
+            break;
+          }
+          console.log("here we are");
+          //window alert with options of yes or no - TODO: make it a modal
+          if (confirm("Your opponent has offered a draw. Do you accept?")) {
+            console.log("sending draw accept");
+            socket.send(
+              JSON.stringify({
+                type: DRAW_ACCEPT,
+                payload: {
+                  gameId: gameId,
+                },
+              })
+            );
+          } else {
+            console.log("sending draw reject");
+            socket.send(
+              JSON.stringify({
+                type: DRAW_REJECT,
+                payload: {
+                  gameId: gameId,
+                },
+              })
+            );
+          }
+          break;
+        case DRAW_REJECT:
+          console.log("Draw rejected");
           break;
         case GAME_ENDED:
           console.log("game ended", payload);
@@ -100,7 +134,6 @@ const GameAction = () => {
             };
           }
           let time = returnsTime(payload.game_type);
-          console.log("for now: ", time);
           gameRef.current = {
             ...gameRef.current,
             result: payload.result,
@@ -187,6 +220,17 @@ const GameAction = () => {
             );
           }}
           moves={gameRef.current?.moves}
+          onDrawButtonClick={() => {
+            console.log("draw offer clicked");
+            socket.send(
+              JSON.stringify({
+                type: DRAW_OFFER,
+                payload: {
+                  gameId: gameId,
+                },
+              })
+            );
+          }}
         />
       </div>
     </>
