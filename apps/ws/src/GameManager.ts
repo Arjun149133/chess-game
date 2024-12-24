@@ -54,7 +54,10 @@ export class GameManager {
       console.log("message: ", message);
       if (message.type === INIT_GAME) {
         console.log("player2 game type: ", message.payload.game_type);
-        if (this.pendingGameId.get(message.payload.game_type)) {
+        if (
+          this.pendingGameId.get(message.payload.game_type) &&
+          !message.payload.playingFriend
+        ) {
           console.log("pending game found");
           const game = this.games.find(
             (x) =>
@@ -87,7 +90,9 @@ export class GameManager {
             message.payload.game_type as GAME_TYPE
           );
           this.games.push(game);
-          this.pendingGameId.set(message.payload.game_type, game.gameId);
+          if (!message.payload.playingFriend) {
+            this.pendingGameId.set(message.payload.game_type, game.gameId);
+          }
           socketManager.addUser(user, game.gameId);
           socketManager.broadcast(
             game.gameId,

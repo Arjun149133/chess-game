@@ -202,13 +202,6 @@ const GameAction = () => {
         <Card
           card1={false}
           gameId={gameId}
-          onPlayButtonClick={() => {
-            socket.send(
-              JSON.stringify({
-                type: INIT_GAME,
-              })
-            );
-          }}
           onResignButtonClick={() => {
             socket.send(
               JSON.stringify({

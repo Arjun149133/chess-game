@@ -116,16 +116,7 @@ const GamePage = () => {
                 type: INIT_GAME,
                 payload: {
                   game_type: game?.game_type,
-                },
-              })
-            );
-          }}
-          onResignButtonClick={() => {
-            socket.send(
-              JSON.stringify({
-                type: EXIT_GAME,
-                payload: {
-                  gameId: gameId,
+                  playingFriend: false,
                 },
               })
             );
