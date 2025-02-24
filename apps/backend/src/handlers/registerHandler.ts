@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { db } from "../db";
+import db from "../db";
 import bcrypt from "bcryptjs";
 
 export const registerHandler = async (req: Request, res: Response) => {

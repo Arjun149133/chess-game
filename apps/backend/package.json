@@ -12,6 +12,7 @@
   "description": "",
   "dependencies": {
     "@repo/db": "*",
+    "@repo/typescript-config": "*",
     "@types/bcryptjs": "^2.4.6",
     "@types/cookie-parser": "^1.4.7",
     "@types/cors": "^2.8.17",

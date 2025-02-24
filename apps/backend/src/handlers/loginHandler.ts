@@ -1,12 +1,14 @@
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
-import { db } from "../db";
+import db from "../db";
 import jwt from "jsonwebtoken";
 import { COOKIE_MAX_AGE, JWT_EXPIRES_IN } from "../lib/constants";
 import "dotenv/config";
 
 export const loginHandler = async (req: Request, res: Response) => {
+  console.log("we are here");
   const { email, password } = req.body;
+  console.log(email, password);
   if (!email || !password) {
     res.status(400).json({
       msg: "Please provide both username and password",
@@ -57,6 +59,7 @@ export const loginHandler = async (req: Request, res: Response) => {
       },
     });
   } catch (error) {
+    console.error("error:", error);
     res.status(500).json({
       msg: "Internal server error",
     });
@@ -84,7 +87,7 @@ export const logout = (req: Request, res: Response) => {
       }
     });
   } catch (error) {
-    console.log("Internal server error on logout: ", error);
+    console.error("Internal server error on logout: ", error);
     res.status(500).json({ message: "error" });
   }
 };
